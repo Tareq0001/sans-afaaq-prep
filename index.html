@@ -1,13 +1,36 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>منصة التدريب المتقدم لاختبار SANS AFAAQ | Mercer Mettl</title>
+  <title>SANS AFAAQ Assessment Simulator | Mercer Mettl Preparation</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: 'Inter', 'Tajawal', -apple-system, BlinkMacSystemFont, sans-serif;
+      direction: ltr;
+    }
+    .text-ar {
+      font-family: 'Tajawal', sans-serif;
+      direction: rtl;
+    }
+    .option-btn {
+      text-align: left;
+    }
+    .alert-box {
+      border-left: 4px solid var(--accent-blue);
+      border-right: none;
+    }
+    .alert-box.warning {
+      border-left-color: var(--accent-amber);
+    }
+    .alert-box.success {
+      border-left-color: var(--accent-green);
+    }
+  </style>
 </head>
 <body>
 
@@ -17,27 +40,27 @@
       <div class="brand-badge">
         <div class="brand-logo-icon">✈️</div>
         <div class="brand-title">
-          <h1>SANS AFAAQ | محاكي الاختبار التأهيلي</h1>
-          <p>شركة خدمات الملاحة الجوية السعودية • إعداد منصة Mercer Mettl</p>
+          <h1>SANS AFAAQ Assessment Prep</h1>
+          <p>Saudi Air Navigation Services • Mercer | Mettl Benchmark Simulator</p>
         </div>
       </div>
       <div class="header-actions">
-        <button class="control-btn" id="fontDecreaseBtn" title="تصغير الخط">A-</button>
-        <button class="control-btn" id="fontIncreaseBtn" title="تكبير الخط">A+</button>
-        <button class="control-btn" id="themeToggleBtn">☀️ مريح للعين</button>
+        <button class="control-btn" id="fontDecreaseBtn" title="Decrease Font">A-</button>
+        <button class="control-btn" id="fontIncreaseBtn" title="Increase Font">A+</button>
+        <button class="control-btn" id="themeToggleBtn">☀️ Eye-Care Mode</button>
       </div>
     </div>
     
     <!-- Tab Navigation -->
     <nav class="app-tabs">
       <div class="container tabs-wrapper">
-        <button class="tab-btn active" data-target="view-strategy">📘 خطة النجاح والتكنيك</button>
-        <button class="tab-btn" data-target="view-personality">🧠 مقياس الشخصية (MPP)</button>
-        <button class="tab-btn" data-target="view-logical">📐 المنطق والأشكال (SVG)</button>
-        <button class="tab-btn" data-target="view-numerical">🔢 القدرة العددية والحساب</button>
-        <button class="tab-btn" data-target="view-english">🇬🇧 اللغة الإنجليزية المهنية</button>
-        <button class="tab-btn" data-target="view-mock">⏱️ المحاكي الكامل (المؤقت)</button>
-        <button class="tab-btn" data-target="view-flashcards">📇 بطاقات المراجعة السريعة</button>
+        <button class="tab-btn active" data-target="view-strategy">📘 Strategy & Rules</button>
+        <button class="tab-btn" data-target="view-personality">🧠 Personality (MPP)</button>
+        <button class="tab-btn" data-target="view-logical">📐 Logical Reasoning</button>
+        <button class="tab-btn" data-target="view-numerical">🔢 Numerical Ability</button>
+        <button class="tab-btn" data-target="view-english">🇬🇧 English Verbal</button>
+        <button class="tab-btn" data-target="view-mock">⏱️ Timed Mock Exam</button>
+        <button class="tab-btn" data-target="view-flashcards">📇 Flashcards</button>
       </div>
     </nav>
   </header>
@@ -50,56 +73,56 @@
       <!-- Key Numbers Card -->
       <div class="card">
         <div class="card-header">
-          <div class="card-title">📊 تحليل معادلة الاختبار (199 سؤال في 77 دقيقة)</div>
-          <span class="badge badge-green">معتمد لـ Mettl</span>
+          <div class="card-title">📊 Assessment Formula Breakdown (199 Qs in 77 Mins)</div>
+          <span class="badge badge-green">Mercer Mettl Standard</span>
         </div>
         
         <div class="metrics-grid">
           <div class="metric-box">
             <div class="metric-val">199</div>
-            <div class="metric-label">إجمالي عدد الأسئلة</div>
+            <div class="metric-label">Total Questions</div>
           </div>
           <div class="metric-box">
-            <div class="metric-val">77 دقيقة</div>
-            <div class="metric-label">زمن الاختبار الكلي</div>
+            <div class="metric-val">77 Mins</div>
+            <div class="metric-label">Total Test Duration</div>
           </div>
           <div class="metric-box">
-            <div class="metric-val">~23 ثانية</div>
-            <div class="metric-label">متوسط وقت كل سؤال</div>
+            <div class="metric-val">~23 sec</div>
+            <div class="metric-label">Avg. Time per Question</div>
           </div>
           <div class="metric-box">
-            <div class="metric-val">4 أقسام</div>
-            <div class="metric-label">شخصية • منطق • أرقام • إنجليزي</div>
+            <div class="metric-val">4 Sections</div>
+            <div class="metric-label">Personality • Logic • Math • English</div>
           </div>
         </div>
 
         <div class="alert-box success">
-          <strong>💡 الحقيقة المطمئنة:</strong> رقم (199 سؤال) يبدو ضخماً، لكنه يضم مقياس السمات الشخصية والسلوكية (~100 عبارة) التي تُحل في 3 إلى 5 ثوانٍ فقط، مما يوفر وقتاً كافياً لبقية مسائل المنطق واللغة.
+          <strong>💡 Key Reassurance:</strong> The 199 questions include the <strong>Mettl Personality Profiler (~80-100 items)</strong>, which are rapid behavioral statements answered in 3-5 seconds each, preserving ample time for math, logic, and verbal reasoning!
         </div>
       </div>
 
       <!-- Core Strategic Pillars -->
       <div class="card">
         <div class="card-header">
-          <div class="card-title">🛡️ القواعد الذهبية للسلامة والمراقبة (Proctoring)</div>
+          <div class="card-title">🛡️ Critical Proctoring & Exam Regulations</div>
         </div>
         
         <div class="alert-box warning">
-          <strong>⚠️ تنبيهات المراقبة الصارمة:</strong>
-          <ul style="margin-right: 20px; margin-top: 8px;">
-            <li><strong>الكاميرا والمايكروفون:</strong> مراقبة حية بواسطة الذكاء الاصطناعي (تتبع حركة العين والوجه، رصد الأصوات الخارجية أو وجود شخص آخر).</li>
-            <li><strong>ممنوع تبديل التبويب (Tab Switching):</strong> خروج المؤشر أو فتح أي صفحة أخرى يسجل فوراً كـ "مخالفة"، وقد يُقفل الاختبار نهائياً بعد تحذير واحد!</li>
-            <li><strong>ممنوع ترك أي سؤال فارغ (No Negative Marking):</strong> لا يوجد خصم درجات على الخطأ؛ إذا تبقت ثوانٍ معدودة، اختر كل الأسئلة المتبقية فوراً.</li>
+          <strong>⚠️ Strict AI Proctoring Rules:</strong>
+          <ul style="margin-left: 20px; margin-top: 8px;">
+            <li><strong>Camera & Microphone Monitoring:</strong> AI tracks eye gaze, head turns, multiple faces, and ambient voices. Look straight at the screen.</li>
+            <li><strong>NO Tab Switching:</strong> Leaving the test window or opening any application triggers an instant strike and may terminate your exam!</li>
+            <li><strong>NO Negative Marking:</strong> There is zero penalty for incorrect answers. If time is running out, guess all remaining questions!</li>
           </ul>
         </div>
 
         <div class="alert-box">
-          <strong>🎯 الركائز الأربع التي تبحث عنها شركة الملاحة الجوية (SANS):</strong>
-          <ol style="margin-right: 20px; margin-top: 8px;">
-            <li><strong>السلامة أولاً (Safety First):</strong> لا تساهل في أي خلل أو مجاملة على حساب الأنظمة.</li>
-            <li><strong>الالتزام الصارم بالإجراءات (Strict SOP Adherence):</strong> اتباع التعليمات المعتمدة بدقة.</li>
-            <li><strong>الثبات والهدوء تحت الضغط (Emotional Stability):</strong> السيطرة على النفس عند الطوارئ.</li>
-            <li><strong>روح الفريق الواحد (Teamwork):</strong> الملاحة منظومة متكاملة لا تقبل الفردية.</li>
+          <strong>🎯 SANS Core Evaluation Pillars:</strong>
+          <ol style="margin-left: 20px; margin-top: 8px;">
+            <li><strong>Safety First:</strong> Zero tolerance for compromises or shortcuts in aviation procedures.</li>
+            <li><strong>Strict SOP Compliance:</strong> Consistently following standard operating procedures.</li>
+            <li><strong>Emotional Stability:</strong> Remaining calm, methodical, and collected in high-stress scenarios.</li>
+            <li><strong>Team Collaboration:</strong> Air navigation requires harmonious coordination across multiple units.</li>
           </ol>
         </div>
       </div>
@@ -110,11 +133,11 @@
     <section class="view-panel" id="view-personality">
       <div class="card">
         <div class="card-header">
-          <div class="card-title">🧠 تدريب مقياس الشخصية وأسلوب العمل (Mettl Personality Profiler)</div>
-          <span class="badge">القسم الأكبر (~100 سؤال)</span>
+          <div class="card-title">🧠 Mettl Personality Profiler (MPP) Practice</div>
+          <span class="badge">Major Section (~100 Qs)</span>
         </div>
         <p style="color: var(--text-muted); margin-bottom: 20px;">
-          اختر الإجابة لكل عبارة لتكتشف مباشرة التوجيه المهني الخاص ببيئة الملاحة الجوية، وكيف تكتشف خوارزميات النظام فخاخ "المثالية المصطنعة".
+          Select your response for each statement to see how Mettl evaluates the trait and how it flags "social desirability / lie scale" attempts.
         </p>
         <div id="personalityQuestionsContainer"></div>
       </div>
@@ -124,11 +147,11 @@
     <section class="view-panel" id="view-logical">
       <div class="card">
         <div class="card-header">
-          <div class="card-title">📐 تدريب الاستدلال المنطقي وسلاسل الأشكال (Visual & Logic)</div>
-          <span class="badge">أسئلة رسومات وأشكال</span>
+          <div class="card-title">📐 Logical & Abstract Reasoning (SVG Matrices)</div>
+          <span class="badge">Visual Pattern Recognition</span>
         </div>
         <p style="color: var(--text-muted); margin-bottom: 20px;">
-          تدرب على سرعة التقاط النمط (دوران الزوايا، التظليل، والاستنتاج القياسي) مع مفتاح الحل المباشر لكل نمط.
+          Master pattern recognition (rotations, matrix logic, deduction) with instant 15-second shortcut explanations.
         </p>
         <div id="logicalQuestionsContainer"></div>
       </div>
@@ -138,11 +161,11 @@
     <section class="view-panel" id="view-numerical">
       <div class="card">
         <div class="card-header">
-          <div class="card-title">🔢 تدريب القدرة العددية والحساب السريع (Mental Math)</div>
-          <span class="badge">حل في 15 ثانية</span>
+          <div class="card-title">🔢 Numerical Ability & Mental Math</div>
+          <span class="badge">15-Second Shortcuts</span>
         </div>
         <p style="color: var(--text-muted); margin-bottom: 20px;">
-          تدرب على استراتيجية الحل الذهني السريع للنسب المئوية ومسائل السرعة والمسافة دون الحاجة لحسابات معقدة.
+          Practice fast calculations for percentages, speed-distance-time, and data tables without complex scratch work.
         </p>
         <div id="numericalQuestionsContainer"></div>
       </div>
@@ -152,11 +175,11 @@
     <section class="view-panel" id="view-english">
       <div class="card">
         <div class="card-header">
-          <div class="card-title">🇬🇧 تدريب اللغة الإنجليزية المهنية (English Proficiency)</div>
-          <span class="badge">قواعد ومفردات الطيران</span>
+          <div class="card-title">🇬🇧 Professional English Proficiency</div>
+          <span class="badge">Grammar & Aviation Terms</span>
         </div>
         <p style="color: var(--text-muted); margin-bottom: 20px;">
-          أهم القواعد الشائعة في اختبارات Mettl (Subject-Verb Agreement، أدوات الربط، وحروف الجر الدقيقة).
+          High-frequency grammar rules (Subject-Verb agreement, prepositions, conjunctions) tested in Mettl exams.
         </p>
         <div id="englishQuestionsContainer"></div>
       </div>
@@ -168,18 +191,18 @@
       <!-- Mock Intro Screen -->
       <div class="card" id="mockIntroCard">
         <div class="card-header">
-          <div class="card-title">⏱️ المحاكي الواقعي لاختبار SANS AFAAQ</div>
-          <span class="badge badge-amber">محاكاة حقيقية</span>
+          <div class="card-title">⏱️ Realistic SANS AFAAQ Mock Exam</div>
+          <span class="badge badge-amber">Full Simulation</span>
         </div>
         <p style="margin-bottom: 16px;">
-          هذا المحاكي يجمع لك نماذج متوازنة من الأقسام الأربعة، ويقيس سرعتك ودقتك في الإجابة تحت ضغط الوقت مع مؤقت تنازلي حقيقي.
+          This timed mock exam synthesizes questions from all 4 sections to test your pacing, accuracy, and composure under realistic test conditions.
         </p>
         
         <div class="alert-box">
-          <strong>اختر وضع التدريب المناسب لك الآن:</strong>
+          <strong>Select your training mode:</strong>
           <div style="display: flex; gap: 12px; margin-top: 14px; flex-wrap: wrap;">
-            <button class="primary-btn" id="startMockBtn">🚀 بدء الاختبار الكامل (مؤقت 77 دقيقة)</button>
-            <button class="secondary-btn" id="quickMockBtn">⚡ تدريب السرعة الخاطف (15 دقيقة)</button>
+            <button class="primary-btn" id="startMockBtn">🚀 Start Full Exam (77-Minute Timer)</button>
+            <button class="secondary-btn" id="quickMockBtn">⚡ Speed Sprint Drill (15-Minute Timer)</button>
           </div>
         </div>
       </div>
@@ -188,15 +211,15 @@
       <div class="card" id="mockActiveCard" style="display: none;">
         <div class="mock-timer-bar">
           <div>
-            <span style="color: var(--text-muted); font-size: 0.9rem;">الوقت المتبقي:</span>
+            <span style="color: var(--text-muted); font-size: 0.9rem;">Time Remaining:</span>
             <div class="timer-display" id="mockTimerDisplay">77:00</div>
           </div>
-          <button class="control-btn" style="color: var(--accent-red); border-color: var(--accent-red);" onclick="finishExam()">إنهاء وتسليم الآن</button>
+          <button class="control-btn" style="color: var(--accent-red); border-color: var(--accent-red);" onclick="finishExam()">Finish & Submit</button>
         </div>
 
         <!-- Question Palette Navigation -->
         <div style="margin-bottom: 16px;">
-          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;">لوحة التنقل السريع بين الأسئلة:</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;">Question Palette:</div>
           <div id="mockQuestionPalette" style="display: flex; gap: 6px; flex-wrap: wrap;"></div>
         </div>
 
@@ -205,35 +228,35 @@
 
         <!-- Bottom Controls -->
         <div class="mock-actions" style="justify-content: space-between; margin-top: 16px;">
-          <button class="secondary-btn" id="prevMockBtn" onclick="prevMockQuestion()">➡️ السؤال السابق</button>
-          <button class="primary-btn" id="nextMockBtn" onclick="nextMockQuestion()">السؤال التالي ⬅️</button>
+          <button class="secondary-btn" id="prevMockBtn" onclick="prevMockQuestion()">⬅️ Previous</button>
+          <button class="primary-btn" id="nextMockBtn" onclick="nextMockQuestion()">Next Question ➡️</button>
         </div>
       </div>
 
       <!-- Mock Result Screen -->
       <div class="card" id="mockResultCard" style="display: none;">
         <div class="card-header">
-          <div class="card-title">🎉 تقرير النتيجة ومستوى الجاهزية</div>
-          <span class="badge badge-green" id="resultStatusBadge">مؤهل بامتياز</span>
+          <div class="card-title">🎉 Readiness Scorecard & Report</div>
+          <span class="badge badge-green" id="resultStatusBadge">Top Candidate</span>
         </div>
 
         <div class="metrics-grid">
           <div class="metric-box">
             <div class="metric-val" id="resultOverallScore">0%</div>
-            <div class="metric-label">التقييم العام الكلي</div>
+            <div class="metric-label">Overall Readiness Score</div>
           </div>
           <div class="metric-box">
             <div class="metric-val" id="resultCognitiveScore">0%</div>
-            <div class="metric-label">القدرات الذهنية واللغة</div>
+            <div class="metric-label">Cognitive & Verbal Ability</div>
           </div>
           <div class="metric-box">
             <div class="metric-val" id="resultPersonalityScore">0%</div>
-            <div class="metric-label">مطابقة شخصية الملاحة (Fit)</div>
+            <div class="metric-label">SANS Job & Culture Fit</div>
           </div>
         </div>
 
         <div style="text-align: center; margin-top: 20px;">
-          <button class="primary-btn" onclick="startExam(15 * 60)">🔄 إعادة التدريب السريع</button>
+          <button class="primary-btn" onclick="startExam(15 * 60)">🔄 Retake Speed Sprint</button>
         </div>
       </div>
 
@@ -243,11 +266,11 @@
     <section class="view-panel" id="view-flashcards">
       <div class="card">
         <div class="card-header">
-          <div class="card-title">📇 بطاقات المراجعة الذهنية السريعة</div>
-          <span class="badge" id="flashcardCounter">بطاقة 1 من 5</span>
+          <div class="card-title">📇 Quick Revision Flashcards</div>
+          <span class="badge" id="flashcardCounter">Card 1 of 5</span>
         </div>
         <p style="color: var(--text-muted); text-align: center;">
-          المس البطاقة أو اضغط عليها لتقليبها ورؤية الإجابة والقاعدة الذهبية.
+          Tap or click the card to flip and view the answer and secret key.
         </p>
 
         <div class="flashcard-container">
@@ -255,18 +278,18 @@
             <div class="flashcard-inner">
               <div class="flashcard-front">
                 <div class="flashcard-text" id="flashcardFrontText">...</div>
-                <div class="flashcard-hint">اضغط للقلب 🔄</div>
+                <div class="flashcard-hint">Tap to flip 🔄</div>
               </div>
               <div class="flashcard-back">
                 <div class="flashcard-text" id="flashcardBackText">...</div>
-                <div class="flashcard-hint">اضغط للعودة 🔄</div>
+                <div class="flashcard-hint">Tap to return 🔄</div>
               </div>
             </div>
           </div>
 
           <div style="display: flex; gap: 14px;">
-            <button class="secondary-btn" id="prevCardBtn">➡️ السابقة</button>
-            <button class="primary-btn" id="nextCardBtn">التالية ⬅️</button>
+            <button class="secondary-btn" id="prevCardBtn">⬅️ Previous</button>
+            <button class="primary-btn" id="nextCardBtn">Next ➡️</button>
           </div>
         </div>
       </div>
@@ -276,7 +299,7 @@
 
   <!-- Footer -->
   <footer style="text-align: center; padding: 24px 16px; color: var(--text-dim); font-size: 0.85rem; border-top: 1px solid var(--border-color); background: var(--bg-secondary);">
-    منصة التدريب لبرنامج آفاق (SANS AFAAQ) • مخصصة للأستاذ طارق ابوعشي
+    SANS AFAAQ Assessment Preparation Platform • Customized for Tariq Aboushi
   </footer>
 
   <script src="questions.js"></script>
