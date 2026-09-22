@@ -1,11 +1,11 @@
 /**
- * SANS AFAAQ Assessment - Complete Bilingual Question Bank (English & Arabic)
- * Supports dynamic language switching with one click!
+ * SANS AFAAQ Assessment - Complete Comprehensive Bilingual Question Bank
+ * Full questions for all 4 sections with 100% Arabic & English translations.
  */
 
 const QUESTION_BANK = {
   // ==========================================
-  // SECTION 1: METTL PERSONALITY PROFILER (MPP)
+  // SECTION 1: METTL PERSONALITY PROFILER (MPP) - 12 QUESTIONS
   // ==========================================
   personality: [
     {
@@ -167,7 +167,7 @@ const QUESTION_BANK = {
       recommended: "disagree",
       type: "likert",
       explanation_en: "⚠️ LIE SCALE TRAP: Selecting 'Strongly Agree' triggers the algorithm's unreliability flag. Selecting 'Disagree' indicates honesty.",
-      explanation_ar: "⚠️ فخ تزييف: اختيار 'أعارض' يثبت واقعيتك وصدقك لدى خوارزمية الفحص.",
+      explanation_ar: "⚠️ فخ تزييف: لا يوجد إنسان لم يتأخر ظرفياً في حياته. اختيار 'أعارض' يثبت واقعيتك وصدقك لدى النظام.",
       options_en: [
         { text: "Strongly Agree", value: "strongly_agree", score: 1 },
         { text: "Agree", value: "agree", score: 2 },
@@ -207,11 +207,111 @@ const QUESTION_BANK = {
         { text: "أعارض (Disagree)", value: "disagree", score: 4 },
         { text: "أعارض بشدة (Strongly Disagree)", value: "strongly_disagree", score: 5 }
       ]
+    },
+    {
+      id: "p9",
+      category_en: "Receptiveness to Feedback",
+      category_ar: "تقبل التوجيه والنقد والتطوير",
+      statement_en: "I view constructive feedback and performance critiques as valuable learning opportunities rather than personal attacks.",
+      statement_ar: "أعتبر الملاحظات النقدية البناءة من المسؤولين والزملاء فرصة حقيقية للتطور المهني وليست هجوماً شخصياً.",
+      recommended: "strongly_agree",
+      type: "likert",
+      explanation_en: "Professional maturity and coachability are critical traits for graduate and talent development programs.",
+      explanation_ar: "النقد البناء في برامج التأهيل وسيلة لصقل الكفاءات؛ الموافقة التامة هنا تظهر نضجاً مهنياً عالياً.",
+      options_en: [
+        { text: "Strongly Agree", value: "strongly_agree", score: 5 },
+        { text: "Agree", value: "agree", score: 4 },
+        { text: "Neutral", value: "neutral", score: 3 },
+        { text: "Disagree", value: "disagree", score: 2 },
+        { text: "Strongly Disagree", value: "strongly_disagree", score: 1 }
+      ],
+      options_ar: [
+        { text: "أوافق بشدة (Strongly Agree)", value: "strongly_agree", score: 5 },
+        { text: "أوافق (Agree)", value: "agree", score: 4 },
+        { text: "محايد (Neutral)", value: "neutral", score: 3 },
+        { text: "أعارض (Disagree)", value: "disagree", score: 2 },
+        { text: "أعارض بشدة (Strongly Disagree)", value: "strongly_disagree", score: 1 }
+      ]
+    },
+    {
+      id: "p10",
+      category_en: "Attention to Detail",
+      category_ar: "الدقة وقوة الملاحظة",
+      statement_en: "I double-check numerical figures, coordinates, and details thoroughly before submitting any operational report.",
+      statement_ar: "أدقق في كافة الأرقام والإحداثيات والتفاصيل الصغيرة في أي تقرير أو عمل قبل اعتماده نهائياً.",
+      recommended: "strongly_agree",
+      type: "likert",
+      explanation_en: "In air navigation, even small digit or coordinate errors can have serious safety implications. Meticulous detail is non-negotiable.",
+      explanation_ar: "في الملاحة الجوية، التفاصيل الصغيرة والأرقام (مثل الارتفاعات والمسارات) حاسمة جداً ولا تحتمل أي تساهل.",
+      options_en: [
+        { text: "Strongly Agree", value: "strongly_agree", score: 5 },
+        { text: "Agree", value: "agree", score: 4 },
+        { text: "Neutral", value: "neutral", score: 3 },
+        { text: "Disagree", value: "disagree", score: 2 },
+        { text: "Strongly Disagree", value: "strongly_disagree", score: 1 }
+      ],
+      options_ar: [
+        { text: "أوافق بشدة (Strongly Agree)", value: "strongly_agree", score: 5 },
+        { text: "أوافق (Agree)", value: "agree", score: 4 },
+        { text: "محايد (Neutral)", value: "neutral", score: 3 },
+        { text: "أعارض (Disagree)", value: "disagree", score: 2 },
+        { text: "أعارض بشدة (Strongly Disagree)", value: "strongly_disagree", score: 1 }
+      ]
+    },
+    {
+      id: "p11",
+      category_en: "Adaptability to Dynamic Changes",
+      category_ar: "المرونة مع التغيرات المفاجئة",
+      statement_en: "I feel very frustrated when scheduled work plans change at the last minute.",
+      statement_ar: "أشعر بالانزعاج الشديد عندما تتغير خطة العمل المقررة في اللحظات الأخيرة.",
+      recommended: "strongly_disagree",
+      type: "likert",
+      explanation_en: "Air space is inherently dynamic due to weather and emergency shifts; adaptability is essential.",
+      explanation_ar: "المجال الجوي ديناميكي ويتأثر بالطقس والطوارئ؛ المرونة وسرعة التكيف سمة محورية.",
+      options_en: [
+        { text: "Strongly Agree", value: "strongly_agree", score: 1 },
+        { text: "Agree", value: "agree", score: 2 },
+        { text: "Neutral", value: "neutral", score: 3 },
+        { text: "Disagree", value: "disagree", score: 4 },
+        { text: "Strongly Disagree", value: "strongly_disagree", score: 5 }
+      ],
+      options_ar: [
+        { text: "أوافق بشدة (Strongly Agree)", value: "strongly_agree", score: 1 },
+        { text: "أوافق (Agree)", value: "agree", score: 2 },
+        { text: "محايد (Neutral)", value: "neutral", score: 3 },
+        { text: "أعارض (Disagree)", value: "disagree", score: 4 },
+        { text: "أعارض بشدة (Strongly Disagree)", value: "strongly_disagree", score: 5 }
+      ]
+    },
+    {
+      id: "p12",
+      category_en: "Initiative within Boundaries",
+      category_ar: "المبادرة ضمن حدود النظام",
+      statement_en: "When facing an unusual operational challenge, I proactively seek creative solutions strictly within approved regulations.",
+      statement_ar: "عندما أواجه مشكلة غير معتادة، أبحث عن حلول إبداعية ضمن نطاق الأنظمة المسموح بها دون انتظار توجيه مباشر.",
+      recommended: "strongly_agree",
+      type: "likert",
+      explanation_en: "Combines smart initiative with strict respect for the regulatory and legal framework.",
+      explanation_ar: "تجمع هذه العبارة بين المبادرة الذكية واحترام إطار العمل القانوني المعتمد.",
+      options_en: [
+        { text: "Strongly Agree", value: "strongly_agree", score: 5 },
+        { text: "Agree", value: "agree", score: 4 },
+        { text: "Neutral", value: "neutral", score: 3 },
+        { text: "Disagree", value: "disagree", score: 2 },
+        { text: "Strongly Disagree", value: "strongly_disagree", score: 1 }
+      ],
+      options_ar: [
+        { text: "أوافق بشدة (Strongly Agree)", value: "strongly_agree", score: 5 },
+        { text: "أوافق (Agree)", value: "agree", score: 4 },
+        { text: "محايد (Neutral)", value: "neutral", score: 3 },
+        { text: "أعارض (Disagree)", value: "disagree", score: 2 },
+        { text: "أعارض بشدة (Strongly Disagree)", value: "strongly_disagree", score: 1 }
+      ]
     }
   ],
 
   // ==========================================
-  // SECTION 2: LOGICAL & ABSTRACT REASONING
+  // SECTION 2: LOGICAL REASONING - 5 QUESTIONS (WITH SVG)
   // ==========================================
   logical: [
     {
@@ -291,8 +391,8 @@ const QUESTION_BANK = {
       id: "l3",
       title_en: "Deductive Syllogism",
       title_ar: "الاستنتاج المنطقي القياسي",
-      questionText_en: "Premise 1: All air traffic controllers are certified in standard English.\\nPremise 2: Some air traffic controllers hold private pilot licenses.\\nWhich conclusion is definitely TRUE?",
-      questionText_ar: "معطى 1: جميع المراقبين الجويين معتمدون في اللغة الإنجليزية.\\nمعطى 2: بعض المراقبين الجويين يحملون رخص طيران خاصة.\\nأي استنتاج صحيح ومؤكد 100%؟",
+      questionText_en: "Premise 1: All air traffic controllers are certified in standard English.\nPremise 2: Some air traffic controllers hold private pilot licenses.\nWhich conclusion is definitely TRUE?",
+      questionText_ar: "معطى 1: جميع المراقبين الجويين معتمدون في اللغة الإنجليزية.\nمعطى 2: بعض المراقبين الجويين يحملون رخص طيران خاصة.\nأي استنتاج صحيح ومؤكد 100%؟",
       options_en: [
         { text: "Some private pilot license holders are certified in standard English.", isCorrect: true },
         { text: "All private pilot license holders are air traffic controllers.", isCorrect: false },
@@ -307,11 +407,53 @@ const QUESTION_BANK = {
       ],
       explanation_en: "Since controllers holding pilot licenses are entirely within the group certified in English, some pilot license holders are definitely certified in English.",
       explanation_ar: "بما أن المراقبين الذين يحملون رخص طيران يقعون كلياً ضمن فئة المعتمدين في الإنجليزية، فبالتأكيد بعض حاملي الرخص معتمدون في الإنجليزية."
+    },
+    {
+      id: "l4",
+      title_en: "Cube Folding & Spatial Reasoning",
+      title_ar: "المكعبات ثلاثية الأبعاد والأوجه المتقابلة",
+      questionText_en: "When folding a flat 6-square cross layout into a 3D cube, two faces separated by exactly one square are always:",
+      questionText_ar: "عند طي شريط مستقيم من مربعات مخطط المكعب ثلاثي الأبعاد، أي وجهين يفصل بينهما مربع واحد يكونان دائماً:",
+      options_en: [
+        { text: "Opposite faces (never adjacent)", isCorrect: true },
+        { text: "Adjacent faces (sharing an edge)", isCorrect: false },
+        { text: "Perpendicular faces", isCorrect: false },
+        { text: "Identical faces", isCorrect: false }
+      ],
+      options_ar: [
+        { text: "وجهين متقابلين (Opposite - لا يتجاوران أبداً)", isCorrect: true },
+        { text: "وجهين متجاورين", isCorrect: false },
+        { text: "متعامدين", isCorrect: false },
+        { text: "متطابقين", isCorrect: false }
+      ],
+      explanation_en: "Golden Spatial Rule: In any straight line of squares on a cube net, faces separated by one square will always fold to be opposite each other.",
+      explanation_ar: "قاعدة هندسية ثابتة: في أي شريط مستقيم لمخطط المكعب، الوجهان اللذان يفصل بينهما مربع واحد يكونان متقابلين دائماً."
+    },
+    {
+      id: "l5",
+      title_en: "Shape Shading & Increment Matrix",
+      title_ar: "مصفوفة التظليل والزيادة التدريجية",
+      questionText_en: "In a 2x2 grid where a shaded quadrant moves clockwise while one extra quadrant is shaded every two steps, what is the controlling rule?",
+      questionText_ar: "في مصفوفة مربعات 2×2 مقسمة لأربعة أجزاء، إذا كان الجزء المظلل يتحرك في اتجاه عقارب الساعة بزاوية 90°، ما هي القاعدة الحاكمة؟",
+      options_en: [
+        { text: "Clockwise 90° rotational movement", isCorrect: true },
+        { text: "Horizontal mirror reflection", isCorrect: false },
+        { text: "Random non-systematic shift", isCorrect: false },
+        { text: "Counter-clockwise rotation", isCorrect: false }
+      ],
+      options_ar: [
+        { text: "دوران منتظم في اتجاه عقارب الساعة بزاوية 90°", isCorrect: true },
+        { text: "انعكاس مرآة أفقي وعمودي", isCorrect: false },
+        { text: "حركة عشوائية غير محددة", isCorrect: false },
+        { text: "دوران عكس عقارب الساعة", isCorrect: false }
+      ],
+      explanation_en: "Focus on a single reference quadrant and track its displacement across steps to immediately eliminate incorrect options.",
+      explanation_ar: "دائماً ركز على ربع واحد فقط وتتبع حركته لاستبعاد الخيارات الخاطئة فوراً دون تشتيت نفسك."
     }
   ],
 
   // ==========================================
-  // SECTION 3: NUMERICAL ABILITY
+  // SECTION 3: NUMERICAL ABILITY - 5 QUESTIONS
   // ==========================================
   numerical: [
     {
@@ -359,7 +501,7 @@ const QUESTION_BANK = {
     {
       id: "n3",
       title_en: "Ratios & Distribution",
-      title_ar: "النسب والتوزيع",
+      title_ar: "النسب والتوزيع المالي",
       questionText_en: "A training budget of 120,000 SAR is shared among three departments in the ratio 3 : 2 : 1. How much does the largest department receive?",
       questionText_ar: "تم توزيع ميزانية تدريب بقيمة 120,000 ريال على 3 أقسام بنسبة 3 : 2 : 1. كم نصيب القسم صاحب النسبة الأكبر؟",
       options_en: [
@@ -376,11 +518,53 @@ const QUESTION_BANK = {
       ],
       explanation_en: "Total parts = 3 + 2 + 1 = 6 parts. 1 part = 120,000 ÷ 6 = 20,000 SAR. Largest share (3 parts) = 3 × 20,000 = 60,000 SAR.",
       explanation_ar: "مجموع الأجزاء = 6. قيمة الجزء الواحد = 120,000 ÷ 6 = 20,000 ريال. نصيب الأكبر (3 أجزاء) = 3 × 20,000 = 60,000 ريال."
+    },
+    {
+      id: "n4",
+      title_en: "Data Interpretation & Budgets",
+      title_ar: "تحليل البيانات وقراءة النسب",
+      questionText_en: "If navigation equipment maintenance costs 80,000 SAR total, where 25% is spent on hardware, 40% on software updates, and the remainder on safety training, what is the training budget?",
+      questionText_ar: "إذا كانت تكلفة تشغيل نظام الملاحة 80,000 ريال وتمثل الصيانة 25% منها، وتحديث البرمجيات 40%، والباقي للتدريب. كم يبلغ المبلغ المخصص للتدريب؟",
+      options_en: [
+        { text: "28,000 SAR", isCorrect: true },
+        { text: "20,000 SAR", isCorrect: false },
+        { text: "32,000 SAR", isCorrect: false },
+        { text: "24,000 SAR", isCorrect: false }
+      ],
+      options_ar: [
+        { text: "28,000 ريال", isCorrect: true },
+        { text: "20,000 ريال", isCorrect: false },
+        { text: "32,000 ريال", isCorrect: false },
+        { text: "24,000 ريال", isCorrect: false }
+      ],
+      explanation_en: "Remaining percentage = 100% - (25% + 40%) = 35%. 35% of 80,000: 10% = 8,000, 30% = 24,000, 5% = 4,000 ➔ 24,000 + 4,000 = 28,000 SAR.",
+      explanation_ar: "نسبة التدريب المتبقية = 35%. 10% من 80,000 = 8,000 ➔ 30% = 24,000 و 5% = 4,000 ➔ المجموع = 28,000 ريال."
+    },
+    {
+      id: "n5",
+      title_en: "Mental Averages",
+      title_ar: "المتوسط الحسابي السريع",
+      questionText_en: "A radar station recorded temperature readings over 5 days: (28, 32, 30, 35, 25). What is the mean temperature?",
+      questionText_ar: "سجلت محطة رادار درجات حرارة خلال 5 أيام: (28, 32, 30, 35, 25). ما هو المتوسط الحسابي؟",
+      options_en: [
+        { text: "30", isCorrect: true },
+        { text: "29", isCorrect: false },
+        { text: "31", isCorrect: false },
+        { text: "32", isCorrect: false }
+      ],
+      options_ar: [
+        { text: "30", isCorrect: true },
+        { text: "29", isCorrect: false },
+        { text: "31", isCorrect: false },
+        { text: "32", isCorrect: false }
+      ],
+      explanation_en: "Sum = (28 + 32) + 30 + (35 + 25) = 60 + 30 + 60 = 150. Average = 150 ÷ 5 = 30.",
+      explanation_ar: "المجموع = (28 + 32) + 30 + (35 + 25) = 60 + 30 + 60 = 150. المتوسط = 150 ÷ 5 = 30."
     }
   ],
 
   // ==========================================
-  // SECTION 4: ENGLISH VERBAL & GRAMMAR
+  // SECTION 4: ENGLISH VERBAL - 5 QUESTIONS
   // ==========================================
   english: [
     {
@@ -445,11 +629,53 @@ const QUESTION_BANK = {
       ],
       explanation_en: "'Strict adherence' means complete compliance and commitment, a foundational term in aviation safety.",
       explanation_ar: "'Strict adherence' تعني الامتثال والالتزام التام بالإجراءات، وهي المصطلح الأكثر استخداماً في لوائح الطيران."
+    },
+    {
+      id: "e4",
+      title_en: "Prepositions",
+      title_ar: "حروف الجر الدقيقة",
+      questionText_en: "The systems engineer is highly skilled ________ diagnosing automated radar discrepancies.",
+      questionText_ar: "The systems engineer is highly skilled ________ diagnosing automated radar discrepancies.",
+      options_en: [
+        { text: "at", isCorrect: true },
+        { text: "in", isCorrect: false },
+        { text: "with", isCorrect: false },
+        { text: "on", isCorrect: false }
+      ],
+      options_ar: [
+        { text: "at (الصحيحة مع skilled)", isCorrect: true },
+        { text: "in", isCorrect: false },
+        { text: "with", isCorrect: false },
+        { text: "on", isCorrect: false }
+      ],
+      explanation_en: "The adjective 'skilled' pairs with preposition 'at' when describing proficiency in an activity: 'skilled at diagnosing'.",
+      explanation_ar: "الصفة 'skilled' تقترن بحرف الجر 'at' عند الحديث عن مهارة أو أداء محدد: skilled at doing something."
+    },
+    {
+      id: "e5",
+      title_en: "Contrasting Connectors",
+      title_ar: "الروابط التناقضية",
+      questionText_en: "________ the challenging crosswinds, the pilot executed a smooth touchdown.",
+      questionText_ar: "________ the challenging crosswinds, the pilot executed a smooth touchdown.",
+      options_en: [
+        { text: "Despite", isCorrect: true },
+        { text: "Even though", isCorrect: false },
+        { text: "Whereas", isCorrect: false },
+        { text: "However", isCorrect: false }
+      ],
+      options_ar: [
+        { text: "Despite (بالرغم من - الصحيحة قبل الاسم)", isCorrect: true },
+        { text: "Even though (تحتاج جملة كاملة)", isCorrect: false },
+        { text: "Whereas (بينما)", isCorrect: false },
+        { text: "However (ومع ذلك)", isCorrect: false }
+      ],
+      explanation_en: "'Despite' is followed by a noun phrase ('the challenging crosswinds') without needing a full clause.",
+      explanation_ar: "'Despite' (بالرغم من) يأتي بعدها اسم أو شبه جملة اسمية دون الحاجة لفعل رئيسي."
     }
   ],
 
   // ==========================================
-  // FLASHCARDS (BILINGUAL)
+  // FLASHCARDS - 5 BILINGUAL CARDS
   // ==========================================
   flashcards: [
     {
@@ -475,6 +701,12 @@ const QUESTION_BANK = {
       front_ar: "ما هي أسرع استراتيجية لحل مصفوفات الأشكال الهندسية؟",
       back_en: "Track only ONE feature (e.g. arrow orientation or black dot movement) across frames. Eliminate invalid options immediately.",
       back_ar: "تتبع عنصراً واحداً فقط في الشكل (مثل اتجاه السهم أو نقطة التظليل) واستبعد الخيارات المخالفة فوراً دون تشتيت نفسك بالشكل كاملاً."
+    },
+    {
+      front_en: "How do you handle English Reading Comprehension efficiently?",
+      front_ar: "كيف تقرأ قطع الفهم في اللغة الإنجليزية (Comprehension) بسرعة؟",
+      back_en: "Read the QUESTION and KEYWORDS first! Then scan the passage for that specific keyword rather than reading the entire text from scratch.",
+      back_ar: "اقرأ السؤال وخياراته أولاً لتحديد (الكلمة المفتاحية Keyword)، ثم امسح القطعة بعينيك لتجد الكلمة وتقرأ السطر الذي وردت فيه فقط!"
     }
   ]
 };

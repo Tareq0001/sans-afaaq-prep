@@ -1,6 +1,6 @@
 /**
  * SANS AFAAQ Assessment - Master Interactive Application Engine
- * Supports: Instant Language Switch (AR/EN), Eye-Care Mode, Font Sizing, Drills, Mock Exam & Flashcards.
+ * Supports: Explicit Segmented Language Switch (AR/EN), Eye-Care Mode, Font Sizing, Drills, Mock Exam & Flashcards.
  */
 
 let currentLang = localStorage.getItem("sans_lang") || "ar";
@@ -8,21 +8,19 @@ let currentFontSize = 16;
 
 document.addEventListener("DOMContentLoaded", () => {
   initThemeAndFont();
-  initLanguageToggle();
   initNavigation();
-  renderAllContent();
+  setAppLanguage(currentLang);
   initFlashcards();
   initMockExam();
 });
 
 // ==========================================
-// 1. LANGUAGE SWITCHER (ARABIC <-> ENGLISH)
+// 1. DYNAMIC BILINGUAL DICTIONARY
 // ==========================================
 const UI_TRANSLATIONS = {
   ar: {
     brandTitle: "SANS AFAAQ | محاكي الاختبار التأهيلي",
     brandSubtitle: "شركة خدمات الملاحة الجوية السعودية • إعداد منصة Mercer Mettl",
-    langBtn: "🌐 English",
     themeWarm: "☀️ مريح للعين",
     themeDark: "🌙 الوضع الليلي",
     tabStrategy: "📘 خطة النجاح والتكنيك",
@@ -32,6 +30,7 @@ const UI_TRANSLATIONS = {
     tabEnglish: "🇬🇧 اللغة الإنجليزية المهنية",
     tabMock: "⏱️ المحاكي الكامل (المؤقت)",
     tabFlashcards: "📇 بطاقات المراجعة السريعة",
+    
     // Strategy
     statFormula: "📊 تحليل معادلة الاختبار (199 سؤال في 77 دقيقة)",
     statTotalQ: "إجمالي عدد الأسئلة",
@@ -57,7 +56,25 @@ const UI_TRANSLATIONS = {
         <li><strong>روح الفريق الواحد (Teamwork):</strong> الملاحة منظومة متكاملة لا تقبل الفردية.</li>
       </ol>
     `,
-    // Mock
+
+    // Cards
+    cardPersonalityTitle: "🧠 تدريب مقياس الشخصية وأسلوب العمل (Mettl Personality Profiler)",
+    cardPersonalityBadge: "القسم الأكبر (~100 عبارة)",
+    cardPersonalityDesc: "اختر الإجابة لكل عبارة لتكتشف مباشرة التوجيه المهني الخاص ببيئة الملاحة الجوية، وكيف تكتشف خوارزميات النظام فخاخ 'المثالية المصطنعة' (Lie Scale).",
+    
+    cardLogicalTitle: "📐 تدريب الاستدلال المنطقي وسلاسل الأشكال (Visual Logic)",
+    cardLogicalBadge: "SVG & Matrices",
+    cardLogicalDesc: "تدرب على سرعة التقاط النمط (دوران الزوايا، التظليل، والاستنتاج القياسي) مع مفتاح الحل المباشر لكل نمط في 15 ثانية.",
+
+    cardNumericalTitle: "🔢 تدريب القدرة العددية والحساب السريع (Mental Math)",
+    cardNumericalBadge: "15-Second Shortcuts",
+    cardNumericalDesc: "تدرب على استراتيجية الحل الذهني السريع للنسب المئوية ومسائل السرعة والمسافة والبيانات دون الحاجة لحسابات معقدة.",
+
+    cardEnglishTitle: "🇬🇧 تدريب اللغة الإنجليزية المهنية (English Proficiency)",
+    cardEnglishBadge: "Grammar & Aviation Terms",
+    cardEnglishDesc: "أهم القواعد الشائعة في اختبارات Mettl (Subject-Verb Agreement، أدوات الربط، وحروف الجر الدقيقة ومفردات الطيران).",
+
+    // Mock Exam
     mockTitle: "⏱️ المحاكي الواقعي لاختبار SANS AFAAQ",
     mockDesc: "هذا المحاكي يجمع لك نماذج متوازنة من الأقسام الأربعة، ويقيس سرعتك ودقتك في الإجابة تحت ضغط الوقت مع مؤقت تنازلي حقيقي.",
     mockBtnFull: "🚀 بدء الاختبار الكامل (مؤقت 77 دقيقة)",
@@ -72,16 +89,20 @@ const UI_TRANSLATIONS = {
     mockCognitive: "القدرات الذهنية واللغة",
     mockFit: "مطابقة شخصية الملاحة (Fit)",
     mockRetake: "🔄 إعادة التدريب السريع",
+
     // Flashcards
-    flashcardHint: "اضغط للقلب 🔄",
+    cardFlashcardsTitle: "📇 بطاقات المراجعة الذهنية السريعة",
+    cardFlashcardsDesc: "المس البطاقة أو اضغط عليها لتقليبها ورؤية الإجابة والقاعدة الذهبية.",
+    flashcardHintFront: "اضغط للقلب 🔄",
+    flashcardHintBack: "اضغط للعودة 🔄",
     flashcardPrev: "➡️ السابقة",
     flashcardNext: "التالية ⬅️",
+
     footerText: "منصة التدريب لبرنامج آفاق (SANS AFAAQ) • مخصصة للأستاذ طارق ابوعشي"
   },
   en: {
     brandTitle: "SANS AFAAQ Assessment Prep",
     brandSubtitle: "Saudi Air Navigation Services • Mercer | Mettl Benchmark Simulator",
-    langBtn: "🌐 العربية",
     themeWarm: "☀️ Eye-Care Mode",
     themeDark: "🌙 Dark Mode",
     tabStrategy: "📘 Strategy & Rules",
@@ -91,13 +112,14 @@ const UI_TRANSLATIONS = {
     tabEnglish: "🇬🇧 English Verbal",
     tabMock: "⏱️ Timed Mock Exam",
     tabFlashcards: "📇 Flashcards",
+
     // Strategy
     statFormula: "📊 Assessment Formula Breakdown (199 Qs in 77 Mins)",
     statTotalQ: "Total Questions",
     statDuration: "Total Duration",
     statAvgTime: "Avg. Time per Question",
     statSections: "Personality • Logic • Math • English",
-    statReassurance: "💡 Key Reassurance: The 199 questions include the Mettl Personality Profiler (~80-100 items), which are rapid statements answered in 3-5 seconds each, leaving ample time for math and logic!",
+    statReassurance: "💡 Key Reassurance: The 199 questions include the Mettl Personality Profiler (~80-100 items), which are rapid statements answered in 3-5 seconds each, preserving ample time for math and logic!",
     proctoringTitle: "🛡️ Critical Proctoring & Exam Regulations",
     proctoringRules: `
       <strong>⚠️ Strict AI Proctoring Rules:</strong>
@@ -116,7 +138,25 @@ const UI_TRANSLATIONS = {
         <li><strong>Team Collaboration:</strong> Air navigation requires harmonious coordination across multiple units.</li>
       </ol>
     `,
-    // Mock
+
+    // Cards
+    cardPersonalityTitle: "🧠 Mettl Personality Profiler (MPP) Practice",
+    cardPersonalityBadge: "Major Section (~100 items)",
+    cardPersonalityDesc: "Select your response for each statement to see how Mettl evaluates the trait and how it flags 'social desirability / lie scale' attempts.",
+
+    cardLogicalTitle: "📐 Logical & Abstract Reasoning (Visual Logic)",
+    cardLogicalBadge: "SVG & Matrices",
+    cardLogicalDesc: "Master pattern recognition (rotations, matrix logic, deduction) with instant 15-second shortcut explanations.",
+
+    cardNumericalTitle: "🔢 Numerical Ability & Mental Math",
+    cardNumericalBadge: "15-Second Shortcuts",
+    cardNumericalDesc: "Practice fast calculations for percentages, speed-distance-time, and data tables without complex scratch work.",
+
+    cardEnglishTitle: "🇬🇧 Professional English Proficiency",
+    cardEnglishBadge: "Grammar & Aviation Terms",
+    cardEnglishDesc: "High-frequency grammar rules (Subject-Verb agreement, prepositions, conjunctions) tested in Mettl exams.",
+
+    // Mock Exam
     mockTitle: "⏱️ Realistic SANS AFAAQ Mock Exam",
     mockDesc: "This timed mock exam synthesizes questions from all 4 sections to test your pacing, accuracy, and composure under realistic test conditions.",
     mockBtnFull: "🚀 Start Full Exam (77-Minute Timer)",
@@ -131,45 +171,46 @@ const UI_TRANSLATIONS = {
     mockCognitive: "Cognitive & Verbal Ability",
     mockFit: "SANS Job & Culture Fit",
     mockRetake: "🔄 Retake Speed Sprint",
+
     // Flashcards
-    flashcardHint: "Tap to flip 🔄",
+    cardFlashcardsTitle: "📇 Quick Revision Flashcards",
+    cardFlashcardsDesc: "Tap or click the card to flip and view the answer and secret key.",
+    flashcardHintFront: "Tap to flip 🔄",
+    flashcardHintBack: "Tap to return 🔄",
     flashcardPrev: "⬅️ Previous",
     flashcardNext: "Next ➡️",
+
     footerText: "SANS AFAAQ Assessment Preparation Platform • Customized for Tariq Aboushi"
   }
 };
 
-function initLanguageToggle() {
-  const langBtn = document.getElementById("langToggleBtn");
-  applyLanguage(currentLang);
+// ==========================================
+// 2. EXPLICIT LANGUAGE SWITCHER FUNCTION
+// ==========================================
+window.setAppLanguage = function(lang) {
+  currentLang = lang;
+  localStorage.setItem("sans_lang", lang);
 
-  if (langBtn) {
-    langBtn.addEventListener("click", () => {
-      currentLang = (currentLang === "ar") ? "en" : "ar";
-      localStorage.setItem("sans_lang", currentLang);
-      applyLanguage(currentLang);
-      renderAllContent();
-      renderFlashcard();
-      if (document.getElementById("mockActiveCard").style.display === "block") {
-        renderCurrentMockQuestion();
-      }
-    });
-  }
-}
-
-function applyLanguage(lang) {
-  const t = UI_TRANSLATIONS[lang];
+  const isAr = (lang === "ar");
   document.documentElement.lang = lang;
-  document.documentElement.dir = (lang === "ar") ? "rtl" : "ltr";
-  document.body.style.direction = (lang === "ar") ? "rtl" : "ltr";
+  document.documentElement.dir = isAr ? "rtl" : "ltr";
+  document.body.style.direction = isAr ? "rtl" : "ltr";
 
-  const langBtn = document.getElementById("langToggleBtn");
-  if (langBtn) langBtn.innerHTML = t.langBtn;
+  // Update active pill state
+  const btnAr = document.getElementById("btnLangAr");
+  const btnEn = document.getElementById("btnLangEn");
+  if (btnAr && btnEn) {
+    btnAr.classList.toggle("active", isAr);
+    btnEn.classList.toggle("active", !isAr);
+  }
+
+  const t = UI_TRANSLATIONS[lang];
+  const el = id => document.getElementById(id);
 
   // Update static UI elements
-  const el = id => document.getElementById(id);
   if (el("uiBrandTitle")) el("uiBrandTitle").textContent = t.brandTitle;
   if (el("uiBrandSubtitle")) el("uiBrandSubtitle").textContent = t.brandSubtitle;
+
   if (el("uiTabStrategy")) el("uiTabStrategy").textContent = t.tabStrategy;
   if (el("uiTabPersonality")) el("uiTabPersonality").textContent = t.tabPersonality;
   if (el("uiTabLogical")) el("uiTabLogical").textContent = t.tabLogical;
@@ -189,6 +230,22 @@ function applyLanguage(lang) {
   if (el("uiProctoringRules")) el("uiProctoringRules").innerHTML = t.proctoringRules;
   if (el("uiSansValues")) el("uiSansValues").innerHTML = t.sansValues;
 
+  if (el("uiCardPersonalityTitle")) el("uiCardPersonalityTitle").textContent = t.cardPersonalityTitle;
+  if (el("uiCardPersonalityBadge")) el("uiCardPersonalityBadge").textContent = t.cardPersonalityBadge;
+  if (el("uiCardPersonalityDesc")) el("uiCardPersonalityDesc").textContent = t.cardPersonalityDesc;
+
+  if (el("uiCardLogicalTitle")) el("uiCardLogicalTitle").textContent = t.cardLogicalTitle;
+  if (el("uiCardLogicalBadge")) el("uiCardLogicalBadge").textContent = t.cardLogicalBadge;
+  if (el("uiCardLogicalDesc")) el("uiCardLogicalDesc").textContent = t.cardLogicalDesc;
+
+  if (el("uiCardNumericalTitle")) el("uiCardNumericalTitle").textContent = t.cardNumericalTitle;
+  if (el("uiCardNumericalBadge")) el("uiCardNumericalBadge").textContent = t.cardNumericalBadge;
+  if (el("uiCardNumericalDesc")) el("uiCardNumericalDesc").textContent = t.cardNumericalDesc;
+
+  if (el("uiCardEnglishTitle")) el("uiCardEnglishTitle").textContent = t.cardEnglishTitle;
+  if (el("uiCardEnglishBadge")) el("uiCardEnglishBadge").textContent = t.cardEnglishBadge;
+  if (el("uiCardEnglishDesc")) el("uiCardEnglishDesc").textContent = t.cardEnglishDesc;
+
   if (el("uiMockTitle")) el("uiMockTitle").textContent = t.mockTitle;
   if (el("uiMockDesc")) el("uiMockDesc").textContent = t.mockDesc;
   if (el("startMockBtn")) el("startMockBtn").textContent = t.mockBtnFull;
@@ -204,13 +261,24 @@ function applyLanguage(lang) {
   if (el("uiMockFit")) el("uiMockFit").textContent = t.mockFit;
   if (el("uiMockRetake")) el("uiMockRetake").textContent = t.mockRetake;
 
+  if (el("uiCardFlashcardsTitle")) el("uiCardFlashcardsTitle").textContent = t.cardFlashcardsTitle;
+  if (el("uiCardFlashcardsDesc")) el("uiCardFlashcardsDesc").textContent = t.cardFlashcardsDesc;
+  if (el("uiFlashcardHintFront")) el("uiFlashcardHintFront").textContent = t.flashcardHintFront;
+  if (el("uiFlashcardHintBack")) el("uiFlashcardHintBack").textContent = t.flashcardHintBack;
   if (el("prevCardBtn")) el("prevCardBtn").textContent = t.flashcardPrev;
   if (el("nextCardBtn")) el("nextCardBtn").textContent = t.flashcardNext;
   if (el("uiFooterText")) el("uiFooterText").textContent = t.footerText;
-}
+
+  // Re-render question sections and flashcards
+  renderAllContent();
+  renderFlashcard();
+  if (document.getElementById("mockActiveCard") && document.getElementById("mockActiveCard").style.display === "block") {
+    renderCurrentMockQuestion();
+  }
+};
 
 // ==========================================
-// 2. THEME & EYE-CARE ACCESSIBILITY
+// 3. THEME & EYE-CARE ACCESSIBILITY
 // ==========================================
 function initThemeAndFont() {
   const themeToggleBtn = document.getElementById("themeToggleBtn");
@@ -250,7 +318,7 @@ function initThemeAndFont() {
 }
 
 // ==========================================
-// 3. TAB NAVIGATION
+// 4. TAB NAVIGATION
 // ==========================================
 function initNavigation() {
   const tabButtons = document.querySelectorAll(".tab-btn");
@@ -274,7 +342,7 @@ function initNavigation() {
 }
 
 // ==========================================
-// 4. RENDERING QUESTIONS (AR/EN DYNAMIC)
+// 5. RENDERING QUESTIONS (AR/EN DYNAMIC)
 // ==========================================
 function renderAllContent() {
   renderPersonalityDrill();
@@ -353,7 +421,7 @@ function renderStandardDrill(sectionKey, containerId) {
           <span class="question-num">${isAr ? `سؤال ${idx + 1} من ${questions.length}` : `Question ${idx + 1} of ${questions.length}`}</span>
           <span class="badge">${title}</span>
         </div>
-        <div class="question-text">${qText}</div>
+        <div class="question-text" style="white-space: pre-line;">${qText}</div>
         ${q.svgGraphic ? q.svgGraphic : ''}
         <div class="options-list">
           ${options.map(opt => `
@@ -395,7 +463,7 @@ window.handleChoice = function(qId, isCorrect, btnElem) {
 };
 
 // ==========================================
-// 5. TIMED MOCK EXAM ENGINE
+// 6. TIMED MOCK EXAM ENGINE
 // ==========================================
 let mockTimer = null;
 let remainingSeconds = 77 * 60;
@@ -487,7 +555,7 @@ function renderCurrentMockQuestion() {
       <span class="question-num">${isAr ? `سؤال ${currentMockIndex + 1} من ${mockQuestions.length}` : `Question ${currentMockIndex + 1} of ${mockQuestions.length}`}</span>
       <span class="badge">${category}</span>
     </div>
-    <div class="question-text">${text}</div>
+    <div class="question-text" style="white-space: pre-line;">${text}</div>
     ${q.svgGraphic ? q.svgGraphic : ''}
     <div class="options-list">
       ${options.map(opt => `
@@ -579,7 +647,7 @@ window.finishExam = function() {
 };
 
 // ==========================================
-// 6. FLASHCARDS SYSTEM
+// 7. FLASHCARDS SYSTEM
 // ==========================================
 let currentCardIndex = 0;
 
