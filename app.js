@@ -1,31 +1,226 @@
 /**
- * SANS AFAAQ Assessment - Interactive Application Engine
- * Manages Tab Navigation, Drills, Mock Exam, Flashcards, and Eye-Care Settings.
+ * SANS AFAAQ Assessment - Master Interactive Application Engine
+ * Supports: Instant Language Switch (AR/EN), Eye-Care Mode, Font Sizing, Drills, Mock Exam & Flashcards.
  */
+
+let currentLang = localStorage.getItem("sans_lang") || "ar";
+let currentFontSize = 16;
 
 document.addEventListener("DOMContentLoaded", () => {
   initThemeAndFont();
+  initLanguageToggle();
   initNavigation();
-  renderSectionDrills();
+  renderAllContent();
   initFlashcards();
   initMockExam();
 });
 
 // ==========================================
-// 1. THEME & EYE-CARE ACCESSIBILITY CONTROLS
+// 1. LANGUAGE SWITCHER (ARABIC <-> ENGLISH)
 // ==========================================
-let currentFontSize = 16;
+const UI_TRANSLATIONS = {
+  ar: {
+    brandTitle: "SANS AFAAQ | محاكي الاختبار التأهيلي",
+    brandSubtitle: "شركة خدمات الملاحة الجوية السعودية • إعداد منصة Mercer Mettl",
+    langBtn: "🌐 English",
+    themeWarm: "☀️ مريح للعين",
+    themeDark: "🌙 الوضع الليلي",
+    tabStrategy: "📘 خطة النجاح والتكنيك",
+    tabPersonality: "🧠 مقياس الشخصية (MPP)",
+    tabLogical: "📐 المنطق والأشكال (SVG)",
+    tabNumerical: "🔢 القدرة العددية والحساب",
+    tabEnglish: "🇬🇧 اللغة الإنجليزية المهنية",
+    tabMock: "⏱️ المحاكي الكامل (المؤقت)",
+    tabFlashcards: "📇 بطاقات المراجعة السريعة",
+    // Strategy
+    statFormula: "📊 تحليل معادلة الاختبار (199 سؤال في 77 دقيقة)",
+    statTotalQ: "إجمالي عدد الأسئلة",
+    statDuration: "زمن الاختبار الكلي",
+    statAvgTime: "متوسط وقت كل سؤال",
+    statSections: "شخصية • منطق • أرقام • إنجليزي",
+    statReassurance: "💡 الحقيقة المطمئنة: رقم (199 سؤال) يبدو ضخماً، لكنه يضم مقياس السمات الشخصية والسلوكية (~100 عبارة) التي تُحل في 3 إلى 5 ثوانٍ فقط، مما يوفر وقتاً كافياً لبقية المسائل!",
+    proctoringTitle: "🛡️ القواعد الذهبية للسلامة والمراقبة (Proctoring)",
+    proctoringRules: `
+      <strong>⚠️ تنبيهات المراقبة الصارمة:</strong>
+      <ul style="margin-right: 20px; margin-top: 8px;">
+        <li><strong>الكاميرا والمايكروفون:</strong> مراقبة حية بواسطة الذكاء الاصطناعي (تتبع حركة العين والوجه، رصد الأصوات الخارجية).</li>
+        <li><strong>ممنوع تبديل التبويب (Tab Switching):</strong> خروج المؤشر أو فتح أي صفحة أخرى يسجل فوراً كـ 'مخالفة' وقد يُلغى اختبارك!</li>
+        <li><strong>ممنوع ترك أي سؤال فارغ (No Negative Marking):</strong> لا يوجد خصم درجات على الخطأ؛ خمن الأسئلة المتبقية دائماً.</li>
+      </ul>
+    `,
+    sansValues: `
+      <strong>🎯 الركائز الأربع التي تبحث عنها شركة الملاحة الجوية (SANS):</strong>
+      <ol style="margin-right: 20px; margin-top: 8px;">
+        <li><strong>السلامة أولاً (Safety First):</strong> لا تساهل في أي خلل أو مجاملة على حساب الأنظمة.</li>
+        <li><strong>الالتزام الصارم بالإجراءات (Strict SOP Adherence):</strong> اتباع التعليمات المعتمدة بدقة.</li>
+        <li><strong>الثبات والهدوء تحت الضغط (Emotional Stability):</strong> السيطرة على النفس عند الطوارئ.</li>
+        <li><strong>روح الفريق الواحد (Teamwork):</strong> الملاحة منظومة متكاملة لا تقبل الفردية.</li>
+      </ol>
+    `,
+    // Mock
+    mockTitle: "⏱️ المحاكي الواقعي لاختبار SANS AFAAQ",
+    mockDesc: "هذا المحاكي يجمع لك نماذج متوازنة من الأقسام الأربعة، ويقيس سرعتك ودقتك في الإجابة تحت ضغط الوقت مع مؤقت تنازلي حقيقي.",
+    mockBtnFull: "🚀 بدء الاختبار الكامل (مؤقت 77 دقيقة)",
+    mockBtnQuick: "⚡ تدريب السرعة الخاطف (15 دقيقة)",
+    mockTimeRemaining: "الوقت المتبقي:",
+    mockFinishNow: "إنهاء وتسليم الآن",
+    mockPrev: "➡️ السابق",
+    mockNext: "التالي ⬅️",
+    mockSubmitFinal: "إنهاء الاختبار وتأكيد التسليم 🏁",
+    mockResultTitle: "🎉 تقرير النتيجة ومستوى الجاهزية",
+    mockOverall: "التقييم العام الكلي",
+    mockCognitive: "القدرات الذهنية واللغة",
+    mockFit: "مطابقة شخصية الملاحة (Fit)",
+    mockRetake: "🔄 إعادة التدريب السريع",
+    // Flashcards
+    flashcardHint: "اضغط للقلب 🔄",
+    flashcardPrev: "➡️ السابقة",
+    flashcardNext: "التالية ⬅️",
+    footerText: "منصة التدريب لبرنامج آفاق (SANS AFAAQ) • مخصصة للأستاذ طارق ابوعشي"
+  },
+  en: {
+    brandTitle: "SANS AFAAQ Assessment Prep",
+    brandSubtitle: "Saudi Air Navigation Services • Mercer | Mettl Benchmark Simulator",
+    langBtn: "🌐 العربية",
+    themeWarm: "☀️ Eye-Care Mode",
+    themeDark: "🌙 Dark Mode",
+    tabStrategy: "📘 Strategy & Rules",
+    tabPersonality: "🧠 Personality (MPP)",
+    tabLogical: "📐 Logical Reasoning",
+    tabNumerical: "🔢 Numerical Ability",
+    tabEnglish: "🇬🇧 English Verbal",
+    tabMock: "⏱️ Timed Mock Exam",
+    tabFlashcards: "📇 Flashcards",
+    // Strategy
+    statFormula: "📊 Assessment Formula Breakdown (199 Qs in 77 Mins)",
+    statTotalQ: "Total Questions",
+    statDuration: "Total Duration",
+    statAvgTime: "Avg. Time per Question",
+    statSections: "Personality • Logic • Math • English",
+    statReassurance: "💡 Key Reassurance: The 199 questions include the Mettl Personality Profiler (~80-100 items), which are rapid statements answered in 3-5 seconds each, leaving ample time for math and logic!",
+    proctoringTitle: "🛡️ Critical Proctoring & Exam Regulations",
+    proctoringRules: `
+      <strong>⚠️ Strict AI Proctoring Rules:</strong>
+      <ul style="margin-left: 20px; margin-top: 8px;">
+        <li><strong>Camera & Mic Monitoring:</strong> AI tracks gaze, head turns, multiple faces, and ambient sounds. Look straight at the screen.</li>
+        <li><strong>NO Tab Switching:</strong> Leaving the test window triggers an instant strike and may terminate your exam!</li>
+        <li><strong>NO Negative Marking:</strong> Zero penalty for wrong answers. Always guess remaining questions before time runs out!</li>
+      </ul>
+    `,
+    sansValues: `
+      <strong>🎯 SANS Core Evaluation Pillars:</strong>
+      <ol style="margin-left: 20px; margin-top: 8px;">
+        <li><strong>Safety First:</strong> Zero tolerance for compromises or shortcuts in aviation procedures.</li>
+        <li><strong>Strict SOP Compliance:</strong> Consistently following standard operating procedures.</li>
+        <li><strong>Emotional Stability:</strong> Remaining calm, methodical, and collected in high-stress scenarios.</li>
+        <li><strong>Team Collaboration:</strong> Air navigation requires harmonious coordination across multiple units.</li>
+      </ol>
+    `,
+    // Mock
+    mockTitle: "⏱️ Realistic SANS AFAAQ Mock Exam",
+    mockDesc: "This timed mock exam synthesizes questions from all 4 sections to test your pacing, accuracy, and composure under realistic test conditions.",
+    mockBtnFull: "🚀 Start Full Exam (77-Minute Timer)",
+    mockBtnQuick: "⚡ Speed Sprint Drill (15-Minute Timer)",
+    mockTimeRemaining: "Time Remaining:",
+    mockFinishNow: "Finish & Submit Now",
+    mockPrev: "⬅️ Previous",
+    mockNext: "Next ➡️",
+    mockSubmitFinal: "Finish Exam & Submit 🏁",
+    mockResultTitle: "🎉 Readiness Scorecard & Report",
+    mockOverall: "Overall Readiness Score",
+    mockCognitive: "Cognitive & Verbal Ability",
+    mockFit: "SANS Job & Culture Fit",
+    mockRetake: "🔄 Retake Speed Sprint",
+    // Flashcards
+    flashcardHint: "Tap to flip 🔄",
+    flashcardPrev: "⬅️ Previous",
+    flashcardNext: "Next ➡️",
+    footerText: "SANS AFAAQ Assessment Preparation Platform • Customized for Tariq Aboushi"
+  }
+};
 
+function initLanguageToggle() {
+  const langBtn = document.getElementById("langToggleBtn");
+  applyLanguage(currentLang);
+
+  if (langBtn) {
+    langBtn.addEventListener("click", () => {
+      currentLang = (currentLang === "ar") ? "en" : "ar";
+      localStorage.setItem("sans_lang", currentLang);
+      applyLanguage(currentLang);
+      renderAllContent();
+      renderFlashcard();
+      if (document.getElementById("mockActiveCard").style.display === "block") {
+        renderCurrentMockQuestion();
+      }
+    });
+  }
+}
+
+function applyLanguage(lang) {
+  const t = UI_TRANSLATIONS[lang];
+  document.documentElement.lang = lang;
+  document.documentElement.dir = (lang === "ar") ? "rtl" : "ltr";
+  document.body.style.direction = (lang === "ar") ? "rtl" : "ltr";
+
+  const langBtn = document.getElementById("langToggleBtn");
+  if (langBtn) langBtn.innerHTML = t.langBtn;
+
+  // Update static UI elements
+  const el = id => document.getElementById(id);
+  if (el("uiBrandTitle")) el("uiBrandTitle").textContent = t.brandTitle;
+  if (el("uiBrandSubtitle")) el("uiBrandSubtitle").textContent = t.brandSubtitle;
+  if (el("uiTabStrategy")) el("uiTabStrategy").textContent = t.tabStrategy;
+  if (el("uiTabPersonality")) el("uiTabPersonality").textContent = t.tabPersonality;
+  if (el("uiTabLogical")) el("uiTabLogical").textContent = t.tabLogical;
+  if (el("uiTabNumerical")) el("uiTabNumerical").textContent = t.tabNumerical;
+  if (el("uiTabEnglish")) el("uiTabEnglish").textContent = t.tabEnglish;
+  if (el("uiTabMock")) el("uiTabMock").textContent = t.tabMock;
+  if (el("uiTabFlashcards")) el("uiTabFlashcards").textContent = t.tabFlashcards;
+
+  if (el("uiStatFormula")) el("uiStatFormula").textContent = t.statFormula;
+  if (el("uiStatTotalQ")) el("uiStatTotalQ").textContent = t.statTotalQ;
+  if (el("uiStatDuration")) el("uiStatDuration").textContent = t.statDuration;
+  if (el("uiStatAvgTime")) el("uiStatAvgTime").textContent = t.statAvgTime;
+  if (el("uiStatSections")) el("uiStatSections").textContent = t.statSections;
+  if (el("uiStatReassurance")) el("uiStatReassurance").innerHTML = t.statReassurance;
+
+  if (el("uiProctoringTitle")) el("uiProctoringTitle").textContent = t.proctoringTitle;
+  if (el("uiProctoringRules")) el("uiProctoringRules").innerHTML = t.proctoringRules;
+  if (el("uiSansValues")) el("uiSansValues").innerHTML = t.sansValues;
+
+  if (el("uiMockTitle")) el("uiMockTitle").textContent = t.mockTitle;
+  if (el("uiMockDesc")) el("uiMockDesc").textContent = t.mockDesc;
+  if (el("startMockBtn")) el("startMockBtn").textContent = t.mockBtnFull;
+  if (el("quickMockBtn")) el("quickMockBtn").textContent = t.mockBtnQuick;
+  if (el("uiMockTimeRemaining")) el("uiMockTimeRemaining").textContent = t.mockTimeRemaining;
+  if (el("uiMockFinishNow")) el("uiMockFinishNow").textContent = t.mockFinishNow;
+  if (el("prevMockBtn")) el("prevMockBtn").textContent = t.mockPrev;
+  if (el("nextMockBtn")) el("nextMockBtn").textContent = t.mockNext;
+
+  if (el("uiMockResultTitle")) el("uiMockResultTitle").textContent = t.mockResultTitle;
+  if (el("uiMockOverall")) el("uiMockOverall").textContent = t.mockOverall;
+  if (el("uiMockCognitive")) el("uiMockCognitive").textContent = t.mockCognitive;
+  if (el("uiMockFit")) el("uiMockFit").textContent = t.mockFit;
+  if (el("uiMockRetake")) el("uiMockRetake").textContent = t.mockRetake;
+
+  if (el("prevCardBtn")) el("prevCardBtn").textContent = t.flashcardPrev;
+  if (el("nextCardBtn")) el("nextCardBtn").textContent = t.flashcardNext;
+  if (el("uiFooterText")) el("uiFooterText").textContent = t.footerText;
+}
+
+// ==========================================
+// 2. THEME & EYE-CARE ACCESSIBILITY
+// ==========================================
 function initThemeAndFont() {
   const themeToggleBtn = document.getElementById("themeToggleBtn");
   const fontIncreaseBtn = document.getElementById("fontIncreaseBtn");
   const fontDecreaseBtn = document.getElementById("fontDecreaseBtn");
 
-  // Load saved theme
   const savedTheme = localStorage.getItem("sans_theme") || "dark";
   if (savedTheme === "warm-light") {
     document.body.classList.add("warm-light");
-    if (themeToggleBtn) themeToggleBtn.innerHTML = "🌙 الوضع الليلي";
+    if (themeToggleBtn) themeToggleBtn.innerHTML = UI_TRANSLATIONS[currentLang].themeDark;
   }
 
   if (themeToggleBtn) {
@@ -33,11 +228,10 @@ function initThemeAndFont() {
       document.body.classList.toggle("warm-light");
       const isWarm = document.body.classList.contains("warm-light");
       localStorage.setItem("sans_theme", isWarm ? "warm-light" : "dark");
-      themeToggleBtn.innerHTML = isWarm ? "🌙 الوضع الليلي" : "☀️ مريح للعين";
+      themeToggleBtn.innerHTML = isWarm ? UI_TRANSLATIONS[currentLang].themeDark : UI_TRANSLATIONS[currentLang].themeWarm;
     });
   }
 
-  // Font resize for eye comfort
   if (fontIncreaseBtn && fontDecreaseBtn) {
     fontIncreaseBtn.addEventListener("click", () => {
       if (currentFontSize < 24) {
@@ -56,7 +250,7 @@ function initThemeAndFont() {
 }
 
 // ==========================================
-// 2. TAB NAVIGATION
+// 3. TAB NAVIGATION
 // ==========================================
 function initNavigation() {
   const tabButtons = document.querySelectorAll(".tab-btn");
@@ -80,9 +274,9 @@ function initNavigation() {
 }
 
 // ==========================================
-// 3. SECTION DRILLS (PRACTICE MODE)
+// 4. RENDERING QUESTIONS (AR/EN DYNAMIC)
 // ==========================================
-function renderSectionDrills() {
+function renderAllContent() {
   renderPersonalityDrill();
   renderStandardDrill("logical", "logicalQuestionsContainer");
   renderStandardDrill("numerical", "numericalQuestionsContainer");
@@ -93,27 +287,36 @@ function renderPersonalityDrill() {
   const container = document.getElementById("personalityQuestionsContainer");
   if (!container || !QUESTION_BANK.personality) return;
 
-  container.innerHTML = QUESTION_BANK.personality.map((q, idx) => `
-    <div class="question-item" id="q_card_${q.id}">
-      <div class="question-header">
-        <span class="question-num">عبارة ${idx + 1} من ${QUESTION_BANK.personality.length}</span>
-        <span class="badge ${q.category.includes('⚠️') ? 'badge-amber' : 'badge'}">${q.category}</span>
+  const isAr = (currentLang === "ar");
+
+  container.innerHTML = QUESTION_BANK.personality.map((q, idx) => {
+    const category = isAr ? q.category_ar : q.category_en;
+    const statement = isAr ? q.statement_ar : q.statement_en;
+    const explanation = isAr ? q.explanation_ar : q.explanation_en;
+    const options = isAr ? q.options_ar : q.options_en;
+
+    return `
+      <div class="question-item" id="q_card_${q.id}">
+        <div class="question-header">
+          <span class="question-num">${isAr ? `عبارة ${idx + 1} من ${QUESTION_BANK.personality.length}` : `Statement ${idx + 1} of ${QUESTION_BANK.personality.length}`}</span>
+          <span class="badge ${category.includes('⚠️') ? 'badge-amber' : ''}">${category}</span>
+        </div>
+        <div class="question-text">${statement}</div>
+        <div class="options-list">
+          ${options.map(opt => `
+            <button class="option-btn" onclick="handlePersonalityChoice('${q.id}', '${opt.value}', ${opt.score}, this)">
+              <span>${opt.text}</span>
+              <span class="choice-indicator">◯</span>
+            </button>
+          `).join("")}
+        </div>
+        <div class="explanation-box" id="exp_${q.id}">
+          <div class="explanation-title">${isAr ? '💡 سر التقييم والتوجيه المهني:' : '💡 Professional Evaluation Insight:'}</div>
+          <div class="explanation-content">${explanation}</div>
+        </div>
       </div>
-      <div class="question-text">${q.statement}</div>
-      <div class="options-list">
-        ${q.options.map((opt, optIdx) => `
-          <button class="option-btn" onclick="handlePersonalityChoice('${q.id}', '${opt.value}', ${opt.score}, this)">
-            <span>${opt.text}</span>
-            <span class="choice-indicator">◯</span>
-          </button>
-        `).join("")}
-      </div>
-      <div class="explanation-box" id="exp_${q.id}">
-        <div class="explanation-title">💡 سر التقييم والتوجيه المهني:</div>
-        <div class="explanation-content">${q.explanation}</div>
-      </div>
-    </div>
-  `).join("");
+    `;
+  }).join("");
 }
 
 window.handlePersonalityChoice = function(qId, val, score, btnElem) {
@@ -136,28 +339,37 @@ function renderStandardDrill(sectionKey, containerId) {
   const questions = QUESTION_BANK[sectionKey];
   if (!container || !questions) return;
 
-  container.innerHTML = questions.map((q, idx) => `
-    <div class="question-item" id="q_card_${q.id}">
-      <div class="question-header">
-        <span class="question-num">سؤال ${idx + 1} من ${questions.length}</span>
-        <span class="badge">${q.title || 'سؤال مهارة'}</span>
+  const isAr = (currentLang === "ar");
+
+  container.innerHTML = questions.map((q, idx) => {
+    const title = isAr ? (q.title_ar || q.title_en) : (q.title_en || q.title_ar);
+    const qText = isAr ? (q.questionText_ar || q.questionText_en) : (q.questionText_en || q.questionText_ar);
+    const explanation = isAr ? (q.explanation_ar || q.explanation_en) : (q.explanation_en || q.explanation_ar);
+    const options = isAr ? (q.options_ar || q.options_en) : (q.options_en || q.options_ar);
+
+    return `
+      <div class="question-item" id="q_card_${q.id}">
+        <div class="question-header">
+          <span class="question-num">${isAr ? `سؤال ${idx + 1} من ${questions.length}` : `Question ${idx + 1} of ${questions.length}`}</span>
+          <span class="badge">${title}</span>
+        </div>
+        <div class="question-text">${qText}</div>
+        ${q.svgGraphic ? q.svgGraphic : ''}
+        <div class="options-list">
+          ${options.map(opt => `
+            <button class="option-btn" onclick="handleChoice('${q.id}', ${opt.isCorrect}, this)">
+              <span>${opt.text}</span>
+              <span class="choice-indicator">◯</span>
+            </button>
+          `).join("")}
+        </div>
+        <div class="explanation-box" id="exp_${q.id}">
+          <div class="explanation-title">${isAr ? '💡 مفتاح الحل والشرح السريع:' : '💡 Solution Key & Shortcut:'}</div>
+          <div class="explanation-content">${explanation}</div>
+        </div>
       </div>
-      <div class="question-text">${q.questionText}</div>
-      ${q.svgGraphic ? q.svgGraphic : ''}
-      <div class="options-list">
-        ${q.options.map((opt, optIdx) => `
-          <button class="option-btn" onclick="handleChoice('${q.id}', ${opt.isCorrect}, this)">
-            <span>${opt.text}</span>
-            <span class="choice-indicator">◯</span>
-          </button>
-        `).join("")}
-      </div>
-      <div class="explanation-box" id="exp_${q.id}">
-        <div class="explanation-title">💡 مفتاح الحل والشرح السريع:</div>
-        <div class="explanation-content">${q.explanation}</div>
-      </div>
-    </div>
-  `).join("");
+    `;
+  }).join("");
 }
 
 window.handleChoice = function(qId, isCorrect, btnElem) {
@@ -169,12 +381,13 @@ window.handleChoice = function(qId, isCorrect, btnElem) {
     b.onclick = null;
   });
 
+  const isAr = (currentLang === "ar");
   if (isCorrect) {
     btnElem.classList.add("correct");
-    btnElem.querySelector(".choice-indicator").textContent = "✓ صحيح";
+    btnElem.querySelector(".choice-indicator").textContent = isAr ? "✓ صحيح" : "✓ Correct";
   } else {
     btnElem.classList.add("wrong");
-    btnElem.querySelector(".choice-indicator").textContent = "✕ خطأ";
+    btnElem.querySelector(".choice-indicator").textContent = isAr ? "✕ خطأ" : "✕ Incorrect";
   }
 
   const expBox = document.getElementById(`exp_${qId}`);
@@ -182,10 +395,10 @@ window.handleChoice = function(qId, isCorrect, btnElem) {
 };
 
 // ==========================================
-// 4. TIMED MOCK EXAM ENGINE
+// 5. TIMED MOCK EXAM ENGINE
 // ==========================================
 let mockTimer = null;
-let remainingSeconds = 77 * 60; // 77 mins standard
+let remainingSeconds = 77 * 60;
 let mockQuestions = [];
 let currentMockIndex = 0;
 let userMockAnswers = {};
@@ -193,12 +406,8 @@ let userMockAnswers = {};
 function initMockExam() {
   const startBtn = document.getElementById("startMockBtn");
   const quickStartBtn = document.getElementById("quickMockBtn");
-  if (startBtn) {
-    startBtn.addEventListener("click", () => startExam(77 * 60));
-  }
-  if (quickStartBtn) {
-    quickStartBtn.addEventListener("click", () => startExam(15 * 60)); // 15-minute quick sprint
-  }
+  if (startBtn) startBtn.addEventListener("click", () => startExam(77 * 60));
+  if (quickStartBtn) quickStartBtn.addEventListener("click", () => startExam(15 * 60));
 }
 
 function startExam(durationSeconds) {
@@ -206,12 +415,11 @@ function startExam(durationSeconds) {
   userMockAnswers = {};
   currentMockIndex = 0;
 
-  // Build combined questions list
   mockQuestions = [
     ...QUESTION_BANK.personality.slice(0, 6),
-    ...QUESTION_BANK.logical.slice(0, 5),
-    ...QUESTION_BANK.numerical.slice(0, 5),
-    ...QUESTION_BANK.english.slice(0, 5)
+    ...QUESTION_BANK.logical.slice(0, 3),
+    ...QUESTION_BANK.numerical.slice(0, 3),
+    ...QUESTION_BANK.english.slice(0, 3)
   ];
 
   document.getElementById("mockIntroCard").style.display = "none";
@@ -267,17 +475,22 @@ function renderCurrentMockQuestion() {
   const q = mockQuestions[currentMockIndex];
   if (!container || !q) return;
 
+  const isAr = (currentLang === "ar");
   const isPersonality = q.type === "likert";
+
+  const category = isAr ? (q.category_ar || q.title_ar) : (q.category_en || q.title_en);
+  const text = isAr ? (q.statement_ar || q.questionText_ar) : (q.statement_en || q.questionText_en);
+  const options = isAr ? (q.options_ar || q.options_en) : (q.options_en || q.options_ar);
 
   container.innerHTML = `
     <div class="question-header">
-      <span class="question-num">سؤال ${currentMockIndex + 1} من ${mockQuestions.length}</span>
-      <span class="badge">${q.category || q.title || 'سؤال'}</span>
+      <span class="question-num">${isAr ? `سؤال ${currentMockIndex + 1} من ${mockQuestions.length}` : `Question ${currentMockIndex + 1} of ${mockQuestions.length}`}</span>
+      <span class="badge">${category}</span>
     </div>
-    <div class="question-text">${q.statement || q.questionText}</div>
+    <div class="question-text">${text}</div>
     ${q.svgGraphic ? q.svgGraphic : ''}
     <div class="options-list">
-      ${q.options.map((opt, optIdx) => `
+      ${options.map(opt => `
         <button class="option-btn ${userMockAnswers[q.id] === opt.text ? 'selected' : ''}" onclick="recordMockAnswer('${q.id}', '${opt.text}', ${isPersonality ? opt.score : (opt.isCorrect ? 1 : 0)}, this)">
           <span>${opt.text}</span>
           <span class="choice-indicator">${userMockAnswers[q.id] === opt.text ? '◉' : '◯'}</span>
@@ -286,12 +499,13 @@ function renderCurrentMockQuestion() {
     </div>
   `;
 
-  // Update Prev / Next buttons
   const prevBtn = document.getElementById("prevMockBtn");
   const nextBtn = document.getElementById("nextMockBtn");
   if (prevBtn) prevBtn.disabled = (currentMockIndex === 0);
   if (nextBtn) {
-    nextBtn.textContent = (currentMockIndex === mockQuestions.length - 1) ? "إنهاء الاختبار وتأكيد التسليم 🏁" : "السؤال التالي ⬅️";
+    nextBtn.textContent = (currentMockIndex === mockQuestions.length - 1)
+      ? UI_TRANSLATIONS[currentLang].mockSubmitFinal
+      : UI_TRANSLATIONS[currentLang].mockNext;
   }
 }
 
@@ -320,12 +534,11 @@ window.prevMockQuestion = function() {
   }
 };
 
-function finishExam() {
+window.finishExam = function() {
   clearInterval(mockTimer);
   document.getElementById("mockActiveCard").style.display = "none";
   document.getElementById("mockResultCard").style.display = "block";
 
-  // Calculate results
   let totalCognitive = 0;
   let correctCognitive = 0;
   let personalityTotalScore = 0;
@@ -337,9 +550,7 @@ function finishExam() {
       personalityMaxScore += 5;
     } else {
       totalCognitive++;
-      if (userMockAnswers[q.id + "_score"] === 1) {
-        correctCognitive++;
-      }
+      if (userMockAnswers[q.id + "_score"] === 1) correctCognitive++;
     }
   });
 
@@ -352,22 +563,23 @@ function finishExam() {
   document.getElementById("resultPersonalityScore").textContent = `${personalityPercent}%`;
 
   const statusBadge = document.getElementById("resultStatusBadge");
+  const isAr = (currentLang === "ar");
   if (statusBadge) {
     if (overallScore >= 80) {
-      statusBadge.textContent = "مؤهل بامتياز لمرحلة المقابلة (Top Candidate)";
+      statusBadge.textContent = isAr ? "مؤهل بامتياز لمرحلة المقابلة (Top Candidate)" : "Top Candidate (Highly Qualified)";
       statusBadge.className = "badge badge-green";
     } else if (overallScore >= 65) {
-      statusBadge.textContent = "مستوى جيد مع فرصة تعزيز سرعة البديهة";
+      statusBadge.textContent = isAr ? "مستوى جيد مع فرصة تعزيز سرعة البديهة" : "Good Performance (Keep Practicing)";
       statusBadge.className = "badge badge-amber";
     } else {
-      statusBadge.textContent = "يحتاج مزيداً من التدريب على سرعة الحل";
+      statusBadge.textContent = isAr ? "يحتاج مزيداً من التدريب على سرعة الحل" : "Needs More Speed Drills";
       statusBadge.className = "badge";
     }
   }
-}
+};
 
 // ==========================================
-// 5. FLASHCARDS SYSTEM
+// 6. FLASHCARDS SYSTEM
 // ==========================================
 let currentCardIndex = 0;
 
@@ -409,13 +621,14 @@ function renderFlashcard() {
   const card = QUESTION_BANK.flashcards[currentCardIndex];
   if (!card) return;
 
+  const isAr = (currentLang === "ar");
   const frontElem = document.getElementById("flashcardFrontText");
   const backElem = document.getElementById("flashcardBackText");
   const counterElem = document.getElementById("flashcardCounter");
 
-  if (frontElem) frontElem.innerHTML = card.front;
-  if (backElem) backElem.innerHTML = card.back.replace(/\\n/g, "<br>");
-  if (counterElem) counterElem.textContent = `بطاقة ${currentCardIndex + 1} من ${QUESTION_BANK.flashcards.length}`;
+  if (frontElem) frontElem.innerHTML = isAr ? card.front_ar : card.front_en;
+  if (backElem) backElem.innerHTML = (isAr ? card.back_ar : card.back_en).replace(/\\n/g, "<br>");
+  if (counterElem) counterElem.textContent = isAr ? `بطاقة ${currentCardIndex + 1} من ${QUESTION_BANK.flashcards.length}` : `Card ${currentCardIndex + 1} of ${QUESTION_BANK.flashcards.length}`;
 
   const prevBtn = document.getElementById("prevCardBtn");
   const nextBtn = document.getElementById("nextCardBtn");
