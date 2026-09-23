@@ -1,17 +1,28 @@
 /**
  * SANS AFAAQ Assessment - Master Interactive Application Engine
- * Supports: Explicit Segmented Language Switch (AR/EN), Eye-Care Mode, Font Sizing, Drills, Mock Exam & Flashcards.
+ * Strict 199-Question Exam Simulation + Anti-Cheat Monitor + Full Bilingual Support
  */
 
 let currentLang = localStorage.getItem("sans_lang") || "ar";
 let currentFontSize = 16;
 
+// Mock Exam Global State
+let mockTimer = null;
+let remainingSeconds = 77 * 60;
+let mockQuestions = [];
+let currentMockIndex = 0;
+let userMockAnswers = {};
+let userFlaggedQuestions = {};
+let isExamActive = false;
+let securityStrikes = 0;
+let activePaletteFilter = "all";
+
 document.addEventListener("DOMContentLoaded", () => {
   initThemeAndFont();
   initNavigation();
+  initSecurityMonitor();
   setAppLanguage(currentLang);
   initFlashcards();
-  initMockExam();
 });
 
 // ==========================================
@@ -28,7 +39,7 @@ const UI_TRANSLATIONS = {
     tabLogical: "📐 المنطق والأشكال (SVG)",
     tabNumerical: "🔢 القدرة العددية والحساب",
     tabEnglish: "🇬🇧 اللغة الإنجليزية المهنية",
-    tabMock: "⏱️ المحاكي الكامل (المؤقت)",
+    tabMock: "⏱️ المحاكي الصارم (199 سؤال)",
     tabFlashcards: "📇 بطاقات المراجعة السريعة",
     
     // Strategy
@@ -74,21 +85,40 @@ const UI_TRANSLATIONS = {
     cardEnglishBadge: "Grammar & Aviation Terms",
     cardEnglishDesc: "أهم القواعد الشائعة في اختبارات Mettl (Subject-Verb Agreement، أدوات الربط، وحروف الجر الدقيقة ومفردات الطيران).",
 
-    // Mock Exam
-    mockTitle: "⏱️ المحاكي الواقعي لاختبار SANS AFAAQ",
-    mockDesc: "هذا المحاكي يجمع لك نماذج متوازنة من الأقسام الأربعة، ويقيس سرعتك ودقتك في الإجابة تحت ضغط الوقت مع مؤقت تنازلي حقيقي.",
-    mockBtnFull: "🚀 بدء الاختبار الكامل (مؤقت 77 دقيقة)",
-    mockBtnQuick: "⚡ تدريب السرعة الخاطف (15 دقيقة)",
+    // Strict Mock Exam
+    mockTitle: "⏱️ المحاكي الصارم لاختبار SANS AFAAQ (199 سؤال)",
+    mockDesc: "محاكاة صارمة وواقعية 100% للاختبار الفعلي: 199 سؤالاً مقسمة على الأقسام الأربعة، مع مؤقت 77 دقيقة ونظام رقابة لمنع تبديل النوافذ (Anti-Cheating Simulation).",
+    mockBtnFull: "🚀 بدء المحاكي الصارم الكامل (199 سؤال - 77 دقيقة)",
+    mockBtnQuick: "⚡ تدريب السرعة الخاطف (25 سؤال - 10 دقائق)",
     mockTimeRemaining: "الوقت المتبقي:",
     mockFinishNow: "إنهاء وتسليم الآن",
+    flagBtnText: "تمييز للمراجعة",
+    flaggedText: "تم التمييز بنجاح 🚩",
+    secAll: "الكل (199)",
+    secP: "1. الشخصية (1 - 90)",
+    secL: "2. المنطق (91 - 126)",
+    secN: "3. الأرقام (127 - 162)",
+    secE: "4. الإنجليزية (163 - 199)",
+    legAns: "مجاب عنه",
+    legFlag: "مميز للمراجعة",
+    legUnans: "لم يُجب",
     mockPrev: "➡️ السابق",
     mockNext: "التالي ⬅️",
     mockSubmitFinal: "إنهاء الاختبار وتأكيد التسليم 🏁",
-    mockResultTitle: "🎉 تقرير النتيجة ومستوى الجاهزية",
-    mockOverall: "التقييم العام الكلي",
-    mockCognitive: "القدرات الذهنية واللغة",
-    mockFit: "مطابقة شخصية الملاحة (Fit)",
-    mockRetake: "🔄 إعادة التدريب السريع",
+    mockResultTitle: "🎉 تقرير النتيجة ومستوى الجاهزية الرسمي",
+    mockOverall: "التقييم الإجمالي العام",
+    mockCognitive: "القدرات الذهنية والمعرفية",
+    mockFit: "مطابقة شخصية الملاحة (SANS Fit)",
+    mockLie: "مؤشر كشف المثالية (Lie Scale)",
+    scorecardDetailsTitle: "تفصيل درجات الأقسام الأربعة:",
+    mockRetake: "🔄 إعادة المحاكي الصارم (199 سؤال)",
+
+    // Security Modal
+    secTitle: "🚨 تحذير أمني صارم (محاكاة رقابة Mettl)",
+    secDesc: "تم رصد محاولة مغادرة صفحة الاختبار أو تبديل التبويب!<br><strong>⚠️ في الاختبار الحقيقي، يؤدي تبديل النافذة إلى إغلاق الاختبار واستبعادك فوراً!</strong>",
+    secStrikesPrefix: "عدد التنبيهات: ",
+    secStrikesSuffix: " من 3",
+    secDismiss: "العودة لشاشة الاختبار فوراً",
 
     // Flashcards
     cardFlashcardsTitle: "📇 بطاقات المراجعة الذهنية السريعة",
@@ -110,7 +140,7 @@ const UI_TRANSLATIONS = {
     tabLogical: "📐 Logical Reasoning",
     tabNumerical: "🔢 Numerical Ability",
     tabEnglish: "🇬🇧 English Verbal",
-    tabMock: "⏱️ Timed Mock Exam",
+    tabMock: "⏱️ Strict Mock (199 Qs)",
     tabFlashcards: "📇 Flashcards",
 
     // Strategy
@@ -156,21 +186,40 @@ const UI_TRANSLATIONS = {
     cardEnglishBadge: "Grammar & Aviation Terms",
     cardEnglishDesc: "High-frequency grammar rules (Subject-Verb agreement, prepositions, conjunctions) tested in Mettl exams.",
 
-    // Mock Exam
-    mockTitle: "⏱️ Realistic SANS AFAAQ Mock Exam",
-    mockDesc: "This timed mock exam synthesizes questions from all 4 sections to test your pacing, accuracy, and composure under realistic test conditions.",
-    mockBtnFull: "🚀 Start Full Exam (77-Minute Timer)",
-    mockBtnQuick: "⚡ Speed Sprint Drill (15-Minute Timer)",
+    // Strict Mock Exam
+    mockTitle: "⏱️ Strict SANS AFAAQ Mock Exam (199 Questions)",
+    mockDesc: "Authentic 100% strict simulation: 199 questions across all 4 sections with 77-minute countdown and active anti-cheat window monitoring.",
+    mockBtnFull: "🚀 Start Full Strict Mock (199 Qs - 77 Mins)",
+    mockBtnQuick: "⚡ Speed Sprint Drill (25 Qs - 10 Mins)",
     mockTimeRemaining: "Time Remaining:",
     mockFinishNow: "Finish & Submit Now",
+    flagBtnText: "Flag for Review",
+    flaggedText: "Flagged for Review 🚩",
+    secAll: "All (199)",
+    secP: "1. Personality (1 - 90)",
+    secL: "2. Logic (91 - 126)",
+    secN: "3. Numerical (127 - 162)",
+    secE: "4. English (163 - 199)",
+    legAns: "Answered",
+    legFlag: "Flagged",
+    legUnans: "Unanswered",
     mockPrev: "⬅️ Previous",
     mockNext: "Next ➡️",
     mockSubmitFinal: "Finish Exam & Submit 🏁",
-    mockResultTitle: "🎉 Readiness Scorecard & Report",
+    mockResultTitle: "🎉 Official Readiness & Scorecard Report",
     mockOverall: "Overall Readiness Score",
-    mockCognitive: "Cognitive & Verbal Ability",
-    mockFit: "SANS Job & Culture Fit",
-    mockRetake: "🔄 Retake Speed Sprint",
+    mockCognitive: "Cognitive & Knowledge Score",
+    mockFit: "SANS Culture & Job Fit",
+    mockLie: "Authenticity / Lie Scale Index",
+    scorecardDetailsTitle: "Detailed Section Performance Breakdown:",
+    mockRetake: "🔄 Retake Strict Mock (199 Qs)",
+
+    // Security Modal
+    secTitle: "🚨 Strict Proctoring Alert (Mettl Simulation)",
+    secDesc: "Tab switching or window blur detected!<br><strong>⚠️ In the real proctored exam, switching tabs immediately invalidates your attempt!</strong>",
+    secStrikesPrefix: "Recorded Strikes: ",
+    secStrikesSuffix: " of 3",
+    secDismiss: "Return to Test Screen Now",
 
     // Flashcards
     cardFlashcardsTitle: "📇 Quick Revision Flashcards",
@@ -185,7 +234,7 @@ const UI_TRANSLATIONS = {
 };
 
 // ==========================================
-// 2. EXPLICIT LANGUAGE SWITCHER FUNCTION
+// 2. EXPLICIT LANGUAGE SWITCHER
 // ==========================================
 window.setAppLanguage = function(lang) {
   currentLang = lang;
@@ -196,7 +245,7 @@ window.setAppLanguage = function(lang) {
   document.documentElement.dir = isAr ? "rtl" : "ltr";
   document.body.style.direction = isAr ? "rtl" : "ltr";
 
-  // Update active pill state
+  // Toggle active pill state
   const btnAr = document.getElementById("btnLangAr");
   const btnEn = document.getElementById("btnLangEn");
   if (btnAr && btnEn) {
@@ -207,7 +256,7 @@ window.setAppLanguage = function(lang) {
   const t = UI_TRANSLATIONS[lang];
   const el = id => document.getElementById(id);
 
-  // Update static UI elements
+  // Static texts
   if (el("uiBrandTitle")) el("uiBrandTitle").textContent = t.brandTitle;
   if (el("uiBrandSubtitle")) el("uiBrandSubtitle").textContent = t.brandSubtitle;
 
@@ -248,10 +297,22 @@ window.setAppLanguage = function(lang) {
 
   if (el("uiMockTitle")) el("uiMockTitle").textContent = t.mockTitle;
   if (el("uiMockDesc")) el("uiMockDesc").textContent = t.mockDesc;
-  if (el("startMockBtn")) el("startMockBtn").textContent = t.mockBtnFull;
+  if (el("startFull199Btn")) el("startFull199Btn").textContent = t.mockBtnFull;
   if (el("quickMockBtn")) el("quickMockBtn").textContent = t.mockBtnQuick;
   if (el("uiMockTimeRemaining")) el("uiMockTimeRemaining").textContent = t.mockTimeRemaining;
   if (el("uiMockFinishNow")) el("uiMockFinishNow").textContent = t.mockFinishNow;
+  if (el("uiFlagBtnText")) el("uiFlagBtnText").textContent = userFlaggedQuestions[mockQuestions[currentMockIndex]?.id] ? t.flaggedText : t.flagBtnText;
+
+  if (el("secPillAll")) el("secPillAll").textContent = t.secAll;
+  if (el("secPillP")) el("secPillP").textContent = t.secP;
+  if (el("secPillL")) el("secPillL").textContent = t.secL;
+  if (el("secPillN")) el("secPillN").textContent = t.secN;
+  if (el("secPillE")) el("secPillE").textContent = t.secE;
+
+  if (el("legAns")) el("legAns").textContent = t.legAns;
+  if (el("legFlag")) el("legFlag").textContent = t.legFlag;
+  if (el("legUnans")) el("legUnans").textContent = t.legUnans;
+
   if (el("prevMockBtn")) el("prevMockBtn").textContent = t.mockPrev;
   if (el("nextMockBtn")) el("nextMockBtn").textContent = t.mockNext;
 
@@ -259,7 +320,12 @@ window.setAppLanguage = function(lang) {
   if (el("uiMockOverall")) el("uiMockOverall").textContent = t.mockOverall;
   if (el("uiMockCognitive")) el("uiMockCognitive").textContent = t.mockCognitive;
   if (el("uiMockFit")) el("uiMockFit").textContent = t.mockFit;
+  if (el("uiMockLie")) el("uiMockLie").textContent = t.mockLie;
+  if (el("uiScorecardDetailsTitle")) el("uiScorecardDetailsTitle").textContent = t.scorecardDetailsTitle;
   if (el("uiMockRetake")) el("uiMockRetake").textContent = t.mockRetake;
+
+  if (el("uiSecTitle")) el("uiSecTitle").textContent = t.secTitle;
+  if (el("uiSecDesc")) el("uiSecDesc").innerHTML = t.secDesc;
 
   if (el("uiCardFlashcardsTitle")) el("uiCardFlashcardsTitle").textContent = t.cardFlashcardsTitle;
   if (el("uiCardFlashcardsDesc")) el("uiCardFlashcardsDesc").textContent = t.cardFlashcardsDesc;
@@ -269,10 +335,11 @@ window.setAppLanguage = function(lang) {
   if (el("nextCardBtn")) el("nextCardBtn").textContent = t.flashcardNext;
   if (el("uiFooterText")) el("uiFooterText").textContent = t.footerText;
 
-  // Re-render question sections and flashcards
+  // Re-render
   renderAllContent();
   renderFlashcard();
-  if (document.getElementById("mockActiveCard") && document.getElementById("mockActiveCard").style.display === "block") {
+  if (isExamActive) {
+    renderMockPalette();
     renderCurrentMockQuestion();
   }
 };
@@ -342,7 +409,43 @@ function initNavigation() {
 }
 
 // ==========================================
-// 5. RENDERING QUESTIONS (AR/EN DYNAMIC)
+// 5. ANTI-CHEAT SECURITY MONITOR (METTL PROCTOR SIMULATION)
+// ==========================================
+function initSecurityMonitor() {
+  document.addEventListener("visibilitychange", () => {
+    if (isExamActive && document.hidden) {
+      triggerSecurityStrike();
+    }
+  });
+
+  window.addEventListener("blur", () => {
+    if (isExamActive) {
+      triggerSecurityStrike();
+    }
+  });
+}
+
+function triggerSecurityStrike() {
+  securityStrikes++;
+  const modal = document.getElementById("securityAlertModal");
+  const strikesText = document.getElementById("uiSecStrikes");
+  const t = UI_TRANSLATIONS[currentLang];
+
+  if (strikesText) {
+    strikesText.textContent = `${t.secStrikesPrefix}${securityStrikes}${t.secStrikesSuffix}`;
+  }
+  if (modal) {
+    modal.style.display = "flex";
+  }
+}
+
+window.dismissSecurityModal = function() {
+  const modal = document.getElementById("securityAlertModal");
+  if (modal) modal.style.display = "none";
+};
+
+// ==========================================
+// 6. PRACTICE SECTION DRILLS
 // ==========================================
 function renderAllContent() {
   renderPersonalityDrill();
@@ -463,41 +566,36 @@ window.handleChoice = function(qId, isCorrect, btnElem) {
 };
 
 // ==========================================
-// 6. TIMED MOCK EXAM ENGINE
+// 7. STRICT 199-QUESTION TIMED MOCK EXAM ENGINE
 // ==========================================
-let mockTimer = null;
-let remainingSeconds = 77 * 60;
-let mockQuestions = [];
-let currentMockIndex = 0;
-let userMockAnswers = {};
-
-function initMockExam() {
-  const startBtn = document.getElementById("startMockBtn");
-  const quickStartBtn = document.getElementById("quickMockBtn");
-  if (startBtn) startBtn.addEventListener("click", () => startExam(77 * 60));
-  if (quickStartBtn) quickStartBtn.addEventListener("click", () => startExam(15 * 60));
-}
-
-function startExam(durationSeconds) {
+window.startExam = function(questionCount, durationSeconds) {
   remainingSeconds = durationSeconds;
   userMockAnswers = {};
+  userFlaggedQuestions = {};
   currentMockIndex = 0;
+  isExamActive = true;
+  securityStrikes = 0;
 
-  mockQuestions = [
-    ...QUESTION_BANK.personality.slice(0, 6),
-    ...QUESTION_BANK.logical.slice(0, 3),
-    ...QUESTION_BANK.numerical.slice(0, 3),
-    ...QUESTION_BANK.english.slice(0, 3)
-  ];
+  if (questionCount === 199 && QUESTION_BANK.mock199) {
+    mockQuestions = [...QUESTION_BANK.mock199];
+  } else {
+    // 25-question speed drill
+    mockQuestions = [
+      ...QUESTION_BANK.personality.slice(0, 10),
+      ...QUESTION_BANK.logical.slice(0, 5),
+      ...QUESTION_BANK.numerical.slice(0, 5),
+      ...QUESTION_BANK.english.slice(0, 5)
+    ];
+  }
 
   document.getElementById("mockIntroCard").style.display = "none";
   document.getElementById("mockActiveCard").style.display = "block";
   document.getElementById("mockResultCard").style.display = "none";
 
-  renderMockPalette();
+  filterPalette("all");
   renderCurrentMockQuestion();
   startTimerCountdown();
-}
+};
 
 function startTimerCountdown() {
   clearInterval(mockTimer);
@@ -518,18 +616,57 @@ function updateTimerDisplay() {
   const display = document.getElementById("mockTimerDisplay");
   if (display) {
     display.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    if (remainingSeconds <= 300) {
+      display.style.color = "var(--accent-red)";
+    } else {
+      display.style.color = "var(--accent-amber)";
+    }
   }
 }
+
+// Section tabs filter
+window.filterPalette = function(secKey) {
+  activePaletteFilter = secKey;
+  const pills = {
+    all: document.getElementById("secPillAll"),
+    personality: document.getElementById("secPillP"),
+    logical: document.getElementById("secPillL"),
+    numerical: document.getElementById("secPillN"),
+    english: document.getElementById("secPillE")
+  };
+
+  Object.keys(pills).forEach(k => {
+    if (pills[k]) pills[k].classList.toggle("active", k === secKey);
+  });
+
+  renderMockPalette();
+};
 
 function renderMockPalette() {
   const palette = document.getElementById("mockQuestionPalette");
   if (!palette) return;
 
-  palette.innerHTML = mockQuestions.map((q, idx) => `
-    <button class="palette-num ${idx === currentMockIndex ? 'active' : ''} ${userMockAnswers[q.id] ? 'answered' : ''}" onclick="goToMockQuestion(${idx})">
-      ${idx + 1}
-    </button>
-  `).join("");
+  let filtered = mockQuestions.map((q, idx) => ({ q, idx }));
+  if (activePaletteFilter !== "all") {
+    filtered = filtered.filter(item => item.q.section === activePaletteFilter);
+  }
+
+  palette.innerHTML = filtered.map(({ q, idx }) => {
+    const isAnswered = !!userMockAnswers[q.id];
+    const isFlagged = !!userFlaggedQuestions[q.id];
+    const isActive = (idx === currentMockIndex);
+
+    let cls = "palette-num";
+    if (isActive) cls += " active";
+    if (isFlagged) cls += " flagged";
+    else if (isAnswered) cls += " answered";
+
+    return `
+      <button class="${cls}" onclick="goToMockQuestion(${idx})" title="Question ${idx + 1}">
+        ${idx + 1}
+      </button>
+    `;
+  }).join("");
 }
 
 window.goToMockQuestion = function(idx) {
@@ -538,28 +675,52 @@ window.goToMockQuestion = function(idx) {
   renderCurrentMockQuestion();
 };
 
+window.toggleMockFlag = function() {
+  const q = mockQuestions[currentMockIndex];
+  if (!q) return;
+
+  userFlaggedQuestions[q.id] = !userFlaggedQuestions[q.id];
+  const t = UI_TRANSLATIONS[currentLang];
+  const flagText = document.getElementById("uiFlagBtnText");
+  if (flagText) {
+    flagText.textContent = userFlaggedQuestions[q.id] ? t.flaggedText : t.flagBtnText;
+  }
+  renderMockPalette();
+};
+
 function renderCurrentMockQuestion() {
   const container = document.getElementById("mockQuestionViewer");
   const q = mockQuestions[currentMockIndex];
   if (!container || !q) return;
 
   const isAr = (currentLang === "ar");
-  const isPersonality = q.type === "likert";
+  const isPersonality = (q.type === "likert");
 
+  const sectionName = isAr ? q.section_title_ar : q.section_title_en;
   const category = isAr ? (q.category_ar || q.title_ar) : (q.category_en || q.title_en);
   const text = isAr ? (q.statement_ar || q.questionText_ar) : (q.statement_en || q.questionText_en);
   const options = isAr ? (q.options_ar || q.options_en) : (q.options_en || q.options_ar);
 
+  // Update Flag button text
+  const t = UI_TRANSLATIONS[currentLang];
+  const flagText = document.getElementById("uiFlagBtnText");
+  if (flagText) {
+    flagText.textContent = userFlaggedQuestions[q.id] ? t.flaggedText : t.flagBtnText;
+  }
+
   container.innerHTML = `
     <div class="question-header">
-      <span class="question-num">${isAr ? `سؤال ${currentMockIndex + 1} من ${mockQuestions.length}` : `Question ${currentMockIndex + 1} of ${mockQuestions.length}`}</span>
-      <span class="badge">${category}</span>
+      <div>
+        <span class="question-num">${isAr ? `سؤال ${currentMockIndex + 1} من ${mockQuestions.length}` : `Question ${currentMockIndex + 1} of ${mockQuestions.length}`}</span>
+        <span style="color: var(--text-dim); margin-right: 8px; font-size: 0.85rem;">[${sectionName}]</span>
+      </div>
+      <span class="badge ${category && category.includes('⚠️') ? 'badge-amber' : ''}">${category}</span>
     </div>
     <div class="question-text" style="white-space: pre-line;">${text}</div>
     ${q.svgGraphic ? q.svgGraphic : ''}
     <div class="options-list">
       ${options.map(opt => `
-        <button class="option-btn ${userMockAnswers[q.id] === opt.text ? 'selected' : ''}" onclick="recordMockAnswer('${q.id}', '${opt.text}', ${isPersonality ? opt.score : (opt.isCorrect ? 1 : 0)}, this)">
+        <button class="option-btn ${userMockAnswers[q.id] === opt.text ? 'selected' : ''}" onclick="recordMockAnswer('${q.id}', '${opt.text.replace(/'/g, "\\'")}', ${isPersonality ? opt.score : (opt.isCorrect ? 1 : 0)}, this)">
           <span>${opt.text}</span>
           <span class="choice-indicator">${userMockAnswers[q.id] === opt.text ? '◉' : '◯'}</span>
         </button>
@@ -590,7 +751,7 @@ window.nextMockQuestion = function() {
     renderMockPalette();
     renderCurrentMockQuestion();
   } else {
-    finishExam();
+    confirmFinishExam();
   }
 };
 
@@ -602,36 +763,111 @@ window.prevMockQuestion = function() {
   }
 };
 
-window.finishExam = function() {
+window.confirmFinishExam = function() {
+  const answeredCount = Object.keys(userMockAnswers).filter(k => !k.endsWith("_score")).length;
+  const unansweredCount = mockQuestions.length - answeredCount;
+
+  if (unansweredCount > 0) {
+    const isAr = (currentLang === "ar");
+    const msg = isAr
+      ? `تنبيه: يوجد ${unansweredCount} سؤالاً لم تقم بالإجابة عليها بعد!\nتذكر قاعدة Mettl: لا يوجد خصم درجات على الخطأ، هل تريد التسليم الفعلي الآن؟`
+      : `Warning: You have ${unansweredCount} unanswered questions!\nRemember Mettl has NO negative marking. Are you sure you want to finish?`;
+    if (!confirm(msg)) return;
+  }
+  finishExam();
+};
+
+function finishExam() {
   clearInterval(mockTimer);
+  isExamActive = false;
+
   document.getElementById("mockActiveCard").style.display = "none";
   document.getElementById("mockResultCard").style.display = "block";
 
-  let totalCognitive = 0;
-  let correctCognitive = 0;
-  let personalityTotalScore = 0;
-  let personalityMaxScore = 0;
+  // Detailed section performance counters
+  let stats = {
+    personality: { correct: 0, total: 0, maxScore: 0, actualScore: 0 },
+    logical: { correct: 0, total: 0 },
+    numerical: { correct: 0, total: 0 },
+    english: { correct: 0, total: 0 }
+  };
+
+  let lieTrapTotal = 0;
+  let lieTrapPassed = 0;
 
   mockQuestions.forEach(q => {
-    if (q.type === "likert") {
-      personalityTotalScore += (userMockAnswers[q.id + "_score"] || 0);
-      personalityMaxScore += 5;
+    const s = q.section;
+    const scoreVal = userMockAnswers[q.id + "_score"] || 0;
+
+    if (s === "personality") {
+      stats.personality.total++;
+      stats.personality.actualScore += scoreVal;
+      stats.personality.maxScore += 5;
+
+      if (q.category_en && q.category_en.includes("Lie Scale")) {
+        lieTrapTotal++;
+        // Passed if selected Disagree or Strongly Disagree (score >= 4)
+        if (scoreVal >= 4) lieTrapPassed++;
+      }
     } else {
-      totalCognitive++;
-      if (userMockAnswers[q.id + "_score"] === 1) correctCognitive++;
+      stats[s].total++;
+      if (scoreVal === 1) stats[s].correct++;
     }
   });
 
-  const cognitivePercent = Math.round((correctCognitive / totalCognitive) * 100) || 0;
-  const personalityPercent = Math.round((personalityTotalScore / personalityMaxScore) * 100) || 0;
+  const personalityPercent = Math.round((stats.personality.actualScore / (stats.personality.maxScore || 1)) * 100);
+  const cogTotal = stats.logical.total + stats.numerical.total + stats.english.total;
+  const cogCorrect = stats.logical.correct + stats.numerical.correct + stats.english.correct;
+  const cognitivePercent = Math.round((cogCorrect / (cogTotal || 1)) * 100);
+
   const overallScore = Math.round((cognitivePercent * 0.5) + (personalityPercent * 0.5));
 
+  // Render metric scores
+  const isAr = (currentLang === "ar");
   document.getElementById("resultOverallScore").textContent = `${overallScore}%`;
-  document.getElementById("resultCognitiveScore").textContent = `${cognitivePercent}% (${correctCognitive}/${totalCognitive})`;
+  document.getElementById("resultCognitiveScore").textContent = `${cognitivePercent}% (${cogCorrect}/${cogTotal})`;
   document.getElementById("resultPersonalityScore").textContent = `${personalityPercent}%`;
 
+  const lieElem = document.getElementById("resultLieScale");
+  if (lieElem) {
+    if (lieTrapTotal > 0) {
+      const liePercent = Math.round((lieTrapPassed / lieTrapTotal) * 100);
+      lieElem.textContent = isAr ? `${liePercent}% (${lieTrapPassed}/${lieTrapTotal})` : `${liePercent}% Passed`;
+      lieElem.style.color = (liePercent >= 80) ? "var(--accent-green)" : "var(--accent-amber)";
+    } else {
+      lieElem.textContent = isAr ? "اجتياز تام" : "100% Passed";
+    }
+  }
+
+  // Render 4-section breakdown table
+  const tableContainer = document.getElementById("sectionDetailedScores");
+  if (tableContainer) {
+    const pLogic = Math.round((stats.logical.correct / (stats.logical.total || 1)) * 100);
+    const pNum = Math.round((stats.numerical.correct / (stats.numerical.total || 1)) * 100);
+    const pEng = Math.round((stats.english.correct / (stats.english.total || 1)) * 100);
+
+    tableContainer.innerHTML = `
+      <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-color);">
+        <span>${isAr ? '1. مقياس السلوك والشخصية (MPP)' : '1. Personality Profiler (MPP)'}</span>
+        <strong>${personalityPercent}% (${stats.personality.actualScore} / ${stats.personality.maxScore})</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-color);">
+        <span>${isAr ? '2. الاستدلال المنطقي وسلاسل الأشكال' : '2. Logical & Abstract Reasoning'}</span>
+        <strong>${pLogic}% (${stats.logical.correct} / ${stats.logical.total})</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-color);">
+        <span>${isAr ? '3. القدرة العددية والحساب السريع' : '3. Numerical Ability'}</span>
+        <strong>${pNum}% (${stats.numerical.correct} / ${stats.numerical.total})</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between; padding:8px 0;">
+        <span>${isAr ? '4. اللغة الإنجليزية المهنية' : '4. English Language Proficiency'}</span>
+        <strong>${pEng}% (${stats.english.correct} / ${stats.english.total})</strong>
+      </div>
+    `;
+  }
+
+  // Status Badge
   const statusBadge = document.getElementById("resultStatusBadge");
-  const isAr = (currentLang === "ar");
   if (statusBadge) {
     if (overallScore >= 80) {
       statusBadge.textContent = isAr ? "مؤهل بامتياز لمرحلة المقابلة (Top Candidate)" : "Top Candidate (Highly Qualified)";
@@ -644,10 +880,12 @@ window.finishExam = function() {
       statusBadge.className = "badge";
     }
   }
-};
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
 
 // ==========================================
-// 7. FLASHCARDS SYSTEM
+// 8. FLASHCARDS SYSTEM
 // ==========================================
 let currentCardIndex = 0;
 
