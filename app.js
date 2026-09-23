@@ -447,11 +447,130 @@ window.dismissSecurityModal = function() {
 // ==========================================
 // 6. PRACTICE SECTION DRILLS
 // ==========================================
+// ==========================================
+// 6. PRACTICE DRILLS (FULL 199 QUESTIONS & TOPIC FILTERS)
+// ==========================================
+const SECTION_TOPICS = {
+  personality: [
+    { id: "all", label_ar: "الكل (90)", label_en: "All (90)" },
+    { id: "compliance", label_ar: "🛡️ الالتزام والسلامة", label_en: "🛡️ Compliance & Safety", filter: ["الالتزام", "السلامة", "Compliance", "Safety"] },
+    { id: "composure", label_ar: "🧘 الهدوء والثبات", label_en: "🧘 Composure & Stress", filter: ["الهدوء", "الثبات", "التوتر", "الصمود", "Composure", "Stress"] },
+    { id: "teamwork", label_ar: "🤝 روح الفريق", label_en: "🤝 Teamwork & Trust", filter: ["الفريق", "التعاون", "التواصل", "Teamwork", "Cooperation"] },
+    { id: "vigilance", label_ar: "👁️ الدقة واليقظة", label_en: "👁️ Vigilance & Accuracy", filter: ["اليقظة", "الدقة", "التركيز", "الملاحظة", "Vigilance", "Accuracy"] },
+    { id: "leadership", label_ar: "🚀 المبادرة وحل المشكلات", label_en: "🚀 Problem Solving", filter: ["المبادرة", "القيادة", "المرونة", "المشكلات", "Problem", "Adaptability"] },
+    { id: "lie_scale", label_ar: "⚠️ كشف الكذب (10 فخاخ)", label_en: "⚠️ Lie Scale (10 Traps)", filter: ["كشف الكذب", "المثالية", "Lie Scale"] }
+  ],
+  logical: [
+    { id: "all", label_ar: "الكل (36)", label_en: "All (36)" },
+    { id: "visual", label_ar: "📐 مصفوفات الأشكال (SVG)", label_en: "📐 Visual Matrices (SVG)", filter: ["أشكال", "سهم", "مصفوفة", "دوران", "مكعب", "Matrix", "Visual", "Rotation", "Cube"] },
+    { id: "series", label_ar: "🔢 سلاسل الأرقام والحروف", label_en: "🔢 Number & Letter Series", filter: ["متتالية", "متسلسلة", "حروف", "أرقام", "Series", "Number", "Letter"] },
+    { id: "deduction", label_ar: "🧩 الاستنتاج والمنطق", label_en: "🧩 Deductive Reasoning", filter: ["استنتاج", "منطق", "شفرة", "أولويات", "تشفير", "Deduction", "Logic", "Coding"] }
+  ],
+  numerical: [
+    { id: "all", label_ar: "الكل (36)", label_en: "All (36)" },
+    { id: "speed_dist", label_ar: "✈️ سرعة وزمن ومسافة الطيران", label_en: "✈️ Speed, Distance & Time", filter: ["سرعة", "مسافة", "زمن", "طائرة", "رحلة", "Speed", "Distance", "Time", "Flight"] },
+    { id: "percent", label_ar: "📊 النسب المئوية والتغير", label_en: "📊 Percentages & Trends", filter: ["نسبة", "مئوية", "تخفيض", "زيادة", "Percentage", "Discount"] },
+    { id: "ratios", label_ar: "⚖️ التناسب والخلطات", label_en: "⚖️ Ratios & Proportions", filter: ["تناسب", "خلط", "وقود", "وزن", "Ratio", "Proportion", "Fuel"] },
+    { id: "tables", label_ar: "📈 الجداول والبيانات الملاحية", label_en: "📈 Flight Tables & Data", filter: ["جدول", "بيانات", "مدرج", "حركة", "Table", "Data", "Traffic"] }
+  ],
+  english: [
+    { id: "all", label_ar: "الكل (37)", label_en: "All (37)" },
+    { id: "grammar", label_ar: "📝 قواعد الأزمنة والتطابق", label_en: "📝 Grammar & Agreement", filter: ["زمن", "قاعدة", "فعل", "فاعل", "Grammar", "Tense", "Agreement", "Verb"] },
+    { id: "connectors", label_ar: "🔗 الروابط وحروف الجر", label_en: "🔗 Connectors & Prepositions", filter: ["رابط", "حرف جر", "إضافة", "Connector", "Preposition", "Conjunction"] },
+    { id: "vocab", label_ar: "✈️ مصطلحات الطيران والملاحة", label_en: "✈️ Aviation Terminology", filter: ["طيران", "ملاحة", "مصطلح", "مدرج", "Aviation", "Altitude", "Runway", "Clearance"] },
+    { id: "reading", label_ar: "📖 الاستيعاب القرائي السريع", label_en: "📖 Reading Comprehension", filter: ["قطعة", "استيعاب", "قراءة", "فهم", "Reading", "Passage", "Comprehension"] }
+  ]
+};
+
+let activePracticeFilters = {
+  personality: "all",
+  logical: "all",
+  numerical: "all",
+  english: "all"
+};
+
 function renderAllContent() {
+  renderPracticeFilterBar("personality", "personalityFilterBar");
+  renderPracticeFilterBar("logical", "logicalFilterBar");
+  renderPracticeFilterBar("numerical", "numericalFilterBar");
+  renderPracticeFilterBar("english", "englishFilterBar");
+
   renderPersonalityDrill();
   renderStandardDrill("logical", "logicalQuestionsContainer");
   renderStandardDrill("numerical", "numericalQuestionsContainer");
   renderStandardDrill("english", "englishQuestionsContainer");
+
+  applyPracticeFilter("personality");
+  applyPracticeFilter("logical");
+  applyPracticeFilter("numerical");
+  applyPracticeFilter("english");
+}
+
+function renderPracticeFilterBar(secKey, barId) {
+  const bar = document.getElementById(barId);
+  const topics = SECTION_TOPICS[secKey];
+  if (!bar || !topics) return;
+
+  const isAr = (currentLang === "ar");
+  const activeId = activePracticeFilters[secKey] || "all";
+
+  bar.innerHTML = topics.map(top => `
+    <button class="practice-filter-pill ${top.id === activeId ? 'active' : ''}" 
+            onclick="setPracticeFilter('${secKey}', '${top.id}')">
+      ${isAr ? top.label_ar : top.label_en}
+    </button>
+  `).join("") + `<div class="practice-count-badge" id="${secKey}CountBadge">...</div>`;
+}
+
+window.setPracticeFilter = function(secKey, topicId) {
+  activePracticeFilters[secKey] = topicId;
+  const bar = document.getElementById(secKey + "FilterBar");
+  if (bar) {
+    const pills = bar.querySelectorAll(".practice-filter-pill");
+    const topics = SECTION_TOPICS[secKey];
+    pills.forEach((p, idx) => {
+      p.classList.toggle("active", topics[idx] && topics[idx].id === topicId);
+    });
+  }
+  applyPracticeFilter(secKey);
+};
+
+function applyPracticeFilter(secKey) {
+  const isAr = (currentLang === "ar");
+  const filterId = activePracticeFilters[secKey] || "all";
+  const topicObj = SECTION_TOPICS[secKey].find(t => t.id === filterId);
+  const questions = QUESTION_BANK[secKey] || [];
+  let visibleCount = 0;
+
+  questions.forEach(q => {
+    const card = document.getElementById(`q_card_${q.id}`);
+    if (!card) return;
+
+    if (filterId === "all") {
+      card.style.display = "block";
+      visibleCount++;
+    } else {
+      const matchText = ((q.category_ar || '') + ' ' + (q.category_en || '') + ' ' + 
+                         (q.title_ar || '') + ' ' + (q.title_en || '') + ' ' +
+                         (q.statement_ar || '') + ' ' + (q.statement_en || '') + ' ' +
+                         (q.questionText_ar || '') + ' ' + (q.questionText_en || '')).toLowerCase();
+      
+      const isMatch = topicObj && topicObj.filter.some(f => matchText.includes(f.toLowerCase()));
+      if (isMatch) {
+        card.style.display = "block";
+        visibleCount++;
+      } else {
+        card.style.display = "none";
+      }
+    }
+  });
+
+  const badge = document.getElementById(secKey + "CountBadge");
+  if (badge) {
+    badge.textContent = isAr 
+      ? `معروض: ${visibleCount} من ${questions.length}` 
+      : `Showing: ${visibleCount} of ${questions.length}`;
+  }
 }
 
 function renderPersonalityDrill() {
@@ -482,8 +601,11 @@ function renderPersonalityDrill() {
           `).join("")}
         </div>
         <div class="explanation-box" id="exp_${q.id}">
-          <div class="explanation-title">${isAr ? '💡 سر التقييم والتوجيه المهني:' : '💡 Professional Evaluation Insight:'}</div>
-          <div class="explanation-content">${explanation}</div>
+          <div class="explanation-title">${isAr ? '💡 سر التقييم والتوجيه المهني الملاحي:' : '💡 SANS Aviation Evaluation Insight:'}</div>
+          <div class="explanation-content" id="exp_content_${q.id}">${explanation}</div>
+          <button class="practice-retry-btn" onclick="resetPracticeCard('${q.id}', 'personality')">
+            <span>🔄</span> ${isAr ? 'إعادة التجربة واختيار آخر' : 'Try Again'}
+          </button>
         </div>
       </div>
     `;
@@ -492,6 +614,9 @@ function renderPersonalityDrill() {
 
 window.handlePersonalityChoice = function(qId, val, score, btnElem) {
   const card = document.getElementById(`q_card_${qId}`);
+  if (!card) return;
+  const isAr = (currentLang === "ar");
+
   const allBtns = card.querySelectorAll(".option-btn");
   allBtns.forEach(b => {
     b.classList.remove("selected");
@@ -501,7 +626,38 @@ window.handlePersonalityChoice = function(qId, val, score, btnElem) {
   btnElem.classList.add("selected");
   btnElem.querySelector(".choice-indicator").textContent = "◉";
 
+  const q = QUESTION_BANK.personality.find(item => item.id === qId);
   const expBox = document.getElementById(`exp_${qId}`);
+  const expContent = document.getElementById(`exp_content_${qId}`);
+
+  if (q && expContent) {
+    const isLieScale = (q.category_en && q.category_en.includes("Lie Scale")) || (q.category_ar && q.category_ar.includes("كشف الكذب"));
+    const baseExp = isAr ? q.explanation_ar : q.explanation_en;
+
+    let evalAlert = "";
+    if (isLieScale && (val === "strongly_agree" || val === "agree")) {
+      evalAlert = `
+        <div class="alert-box warning" style="margin-top: 10px; margin-bottom: 8px;">
+          <strong>${isAr ? '⚠️ انتبه - لقد وقعت في فخ المثالية المصطنعة (Lie Scale Trap)!' : '⚠️ Caution - You fell into the Lie Scale Trap!'}</strong><br>
+          ${isAr 
+            ? 'في تقييمات Mettl، الادعاء بالكمال المطلق (مثل "أنا لا أغضب أبداً" أو "لم أخطئ يوماً") يخفض مؤشر مصداقيتك! الإجابة المعتمدة الصادقة هي <strong>(أعارض / Disagree)</strong> لتأكيد نضجك وواقعيتك.' 
+            : 'In Mettl behavioral profiling, claiming absolute perfection flags untruthfulness. The expected authentic answer is <strong>(Disagree)</strong>.'}
+        </div>
+      `;
+    } else if (val === q.recommended) {
+      evalAlert = `
+        <div class="alert-box" style="margin-top: 10px; margin-bottom: 8px; border-color: var(--accent-green); background: rgba(16, 185, 129, 0.08); color: var(--accent-green);">
+          <strong>${isAr ? '🎯 إجابة نموذجية مثالية!' : '🎯 Ideal Benchmark Response!'}</strong><br>
+          ${isAr 
+            ? 'تطابق تام مع معايير السلامة والانضباط ومحددات الكفاءة المعتمدة لدى شركة خدمات الملاحة الجوية السعودية (SANS).' 
+            : 'Perfect alignment with SANS safety culture, operational discipline, and situational composure.'}
+        </div>
+      `;
+    }
+
+    expContent.innerHTML = evalAlert + baseExp;
+  }
+
   if (expBox) expBox.classList.add("show");
 };
 
@@ -527,24 +683,30 @@ function renderStandardDrill(sectionKey, containerId) {
         <div class="question-text" style="white-space: pre-line;">${qText}</div>
         ${q.svgGraphic ? q.svgGraphic : ''}
         <div class="options-list">
-          ${options.map(opt => `
-            <button class="option-btn" onclick="handleChoice('${q.id}', ${opt.isCorrect}, this)">
+          ${options.map((opt, oIdx) => `
+            <button class="option-btn ${opt.isCorrect ? 'is-target-correct' : ''}" 
+                    data-is-correct="${opt.isCorrect}"
+                    onclick="handleChoice('${q.id}', ${opt.isCorrect}, this, '${sectionKey}')">
               <span>${opt.text}</span>
               <span class="choice-indicator">◯</span>
             </button>
           `).join("")}
         </div>
         <div class="explanation-box" id="exp_${q.id}">
-          <div class="explanation-title">${isAr ? '💡 مفتاح الحل والشرح السريع:' : '💡 Solution Key & Shortcut:'}</div>
+          <div class="explanation-title">${isAr ? '💡 مفتاح الحل واستراتيجية الـ 15 ثانية:' : '💡 15-Second Shortcut & Solution Key:'}</div>
           <div class="explanation-content">${explanation}</div>
+          <button class="practice-retry-btn" onclick="resetPracticeCard('${q.id}', '${sectionKey}')">
+            <span>🔄</span> ${isAr ? 'إعادة حل المسألة' : 'Try Again'}
+          </button>
         </div>
       </div>
     `;
   }).join("");
 }
 
-window.handleChoice = function(qId, isCorrect, btnElem) {
+window.handleChoice = function(qId, isCorrect, btnElem, sectionKey) {
   const card = document.getElementById(`q_card_${qId}`);
+  if (!card) return;
   const allBtns = card.querySelectorAll(".option-btn");
 
   allBtns.forEach(b => {
@@ -559,11 +721,48 @@ window.handleChoice = function(qId, isCorrect, btnElem) {
   } else {
     btnElem.classList.add("wrong");
     btnElem.querySelector(".choice-indicator").textContent = isAr ? "✕ خطأ" : "✕ Incorrect";
+
+    // Highlight the correct answer for learning!
+    const correctBtn = card.querySelector(".option-btn[data-is-correct='true']");
+    if (correctBtn && correctBtn !== btnElem) {
+      correctBtn.classList.add("highlight-correct");
+      correctBtn.querySelector(".choice-indicator").textContent = isAr ? "✓ الإجابة الصحيحة" : "✓ Correct Answer";
+    }
   }
 
   const expBox = document.getElementById(`exp_${qId}`);
   if (expBox) expBox.classList.add("show");
 };
+
+window.resetPracticeCard = function(qId, sectionKey) {
+  const card = document.getElementById(`q_card_${qId}`);
+  if (!card) return;
+  const isAr = (currentLang === "ar");
+
+  if (sectionKey === "personality") {
+    const allBtns = card.querySelectorAll(".option-btn");
+    allBtns.forEach(b => {
+      b.classList.remove("selected");
+      b.querySelector(".choice-indicator").textContent = "◯";
+    });
+    const expBox = document.getElementById(`exp_${qId}`);
+    if (expBox) expBox.classList.remove("show");
+  } else {
+    const q = QUESTION_BANK[sectionKey] ? QUESTION_BANK[sectionKey].find(item => item.id === qId) : null;
+    if (!q) return;
+    const options = isAr ? (q.options_ar || q.options_en) : (q.options_en || q.options_ar);
+    const allBtns = card.querySelectorAll(".option-btn");
+    allBtns.forEach((b, idx) => {
+      b.className = `option-btn ${options[idx].isCorrect ? 'is-target-correct' : ''}`;
+      b.setAttribute("data-is-correct", options[idx].isCorrect);
+      b.querySelector(".choice-indicator").textContent = "◯";
+      b.onclick = function() { handleChoice(q.id, options[idx].isCorrect, b, sectionKey); };
+    });
+    const expBox = document.getElementById(`exp_${qId}`);
+    if (expBox) expBox.classList.remove("show");
+  }
+};
+
 
 // ==========================================
 // 7. STRICT 199-QUESTION TIMED MOCK EXAM ENGINE

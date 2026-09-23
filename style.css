@@ -750,3 +750,83 @@ html[dir="ltr"] .option-btn {
     height: 240px;
   }
 }
+
+/* Practice Filters, Learning Highlights & Retry */
+.option-btn.highlight-correct {
+  border-color: var(--accent-green) !important;
+  background: rgba(16, 185, 129, 0.16) !important;
+  color: var(--accent-green) !important;
+  font-weight: 700;
+}
+
+.practice-filter-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.practice-filter-pill {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  user-select: none;
+}
+
+.practice-filter-pill:hover {
+  border-color: var(--accent-blue);
+  color: var(--text-main);
+}
+
+.practice-filter-pill.active {
+  background: linear-gradient(135deg, var(--accent-blue), #0369a1);
+  color: #ffffff;
+  border-color: var(--accent-blue);
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+}
+
+.practice-count-badge {
+  margin-inline-start: auto;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  background: rgba(6, 182, 212, 0.1);
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+.practice-retry-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+}
+
+.practice-retry-btn:hover {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  background: rgba(6, 182, 212, 0.1);
+}
